@@ -1,8 +1,5 @@
-﻿using System;
-using LinkUp.Infrastructure.Identity.Context;
+﻿using LinkUp.Infrastructure.Identity.Context;
 using LinkUp.Infrastructure.Identity.Entities;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
