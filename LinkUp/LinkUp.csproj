@@ -10,4 +10,19 @@
       <Folder Include="Helpers\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LinkUp.Core.Application\LinkUp.Core.Application.csproj" />
+      <ProjectReference Include="..\LinkUp.Core.Domain\LinkUp.Core.Domain.csproj" />
+      <ProjectReference Include="..\LinkUp.Infrastructure.Identity\LinkUp.Infrastructure.Identity.csproj" />
+      <ProjectReference Include="..\LinkUp.Infrastructure.Persistence\LinkUp.Infrastructure.Persistence.csproj" />
+      <ProjectReference Include="..\LinkUp.Infrastructure.Shared\LinkUp.Infrastructure.Shared.csproj" />
+    </ItemGroup>
+
 </Project>
