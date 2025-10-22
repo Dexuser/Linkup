@@ -1,5 +1,5 @@
 using System.Reflection;
-using LinkUp.Core.Persistence.Entities;
+using LinkUp.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LinkUp.Core.Persistence.Context;

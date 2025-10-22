@@ -1,4 +1,4 @@
-namespace LinkUp.Core.Persistence.Entities;
+namespace LinkUp.Core.Domain.Entities;
 
 public class Post
 {

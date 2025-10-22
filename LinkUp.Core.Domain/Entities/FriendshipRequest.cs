@@ -1,6 +1,6 @@
-using LinkUp.Core.Persistence.Common;
+using LinkUp.Core.Domain.Entities.Common;
 
-namespace LinkUp.Core.Persistence.Entities;
+namespace LinkUp.Core.Domain.Entities;
 
 public class FriendshipRequest
 {

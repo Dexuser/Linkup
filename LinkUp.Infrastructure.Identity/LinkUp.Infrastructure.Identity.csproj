@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
+      <ProjectReference Include="..\LinkUp.Core.Application\LinkUp.Core.Application.csproj" />
     </ItemGroup>
 
 </Project>

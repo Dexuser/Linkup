@@ -7,15 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Dtos\" />
-      <Folder Include="Interfaces\" />
-      <Folder Include="Mappings\" />
+      <Folder Include="Mappings\DtosAndEntities\" />
+      <Folder Include="Mappings\DtosAndViewModels\" />
       <Folder Include="Services\" />
       <Folder Include="Viewmodels\" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\LinkUp.Core.Domain\LinkUp.Core.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="14.0.0" />
     </ItemGroup>
 
 </Project>

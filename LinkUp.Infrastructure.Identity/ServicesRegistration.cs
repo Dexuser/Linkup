@@ -1,5 +1,7 @@
-﻿using LinkUp.Infrastructure.Identity.Context;
+﻿using LinkUp.Core.Application.Interfaces;
+using LinkUp.Infrastructure.Identity.Context;
 using LinkUp.Infrastructure.Identity.Entities;
+using LinkUp.Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -60,7 +62,7 @@ namespace LinkUp.Infrastructure.Identity
                 opt.AccessDeniedPath = "/Login/AccessDenied";
             });
 
-            //services.AddScoped<IAccountServiceForWebApp, AccountServiceForWebApp>();
+            services.AddScoped<IAccountServiceForWebApp, AccountServiceForWebApp>();
         }
 
         private static void GeneralConfiguration(IServiceCollection services, IConfiguration config)

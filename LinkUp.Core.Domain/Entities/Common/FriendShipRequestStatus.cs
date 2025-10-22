@@ -1,4 +1,4 @@
-namespace LinkUp.Core.Persistence.Common;
+namespace LinkUp.Core.Domain.Entities.Common;
 
 public enum FriendShipRequestStatus
 {

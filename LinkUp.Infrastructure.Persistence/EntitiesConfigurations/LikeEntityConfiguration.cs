@@ -1,4 +1,4 @@
-using LinkUp.Core.Persistence.Entities;
+using LinkUp.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
