@@ -2,7 +2,7 @@ namespace LinkUp.Core.Domain.Interfaces;
 
 public interface IGenericRepository<TEntity>
 {
-    Task<List<TEntity>> GetAllAsync(TEntity entity);
+    Task<List<TEntity>> GetAllAsync();
     
     Task<TEntity?> GetByIdAsync(int id);
     Task<TEntity> AddAsync(TEntity entity);

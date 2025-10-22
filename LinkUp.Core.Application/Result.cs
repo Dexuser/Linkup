@@ -4,31 +4,37 @@
     {
         public bool IsSuccess { get; }
         public bool IsFailure => !IsSuccess;
+        
+        public string? GeneralError { get; }
         public Dictionary<string, List<string>>? Errors { get; }
 
 
-        protected Result(bool isSuccess, Dictionary<string, List<string>>? errors)
+        protected Result(bool isSuccess, string? generalError, Dictionary<string, List<string>>? errors)
         {
             IsSuccess = isSuccess;
+            GeneralError = generalError;
             Errors = errors;
         }
 
-        public static Result Ok() => new(true, null);
-
-        public static Result Fail(Dictionary<string, List<string>> errors) => new(false, errors);
+        public static Result Ok() => new(true, null, null);
+        public static Result Fail(Dictionary<string, List<string>> errors) => new(false, null, errors);
+        public static Result Fail(string generalError) => new(false, generalError, null);
     }
 
     public class Result<T> : Result
     {
         public T? Value { get; }
 
-        protected Result(bool isSuccess, T? value, Dictionary<string, List<string>>? error) : base(isSuccess, error)
+        protected Result(
+            bool isSuccess, T? value, 
+            string? generalError, Dictionary<string, List<string>>? errors) : base(isSuccess, generalError ,errors)
         {
             Value = value;
         }
 
-        public static Result<T> Ok(T value) => new(true, value, null);
+        public static Result<T> Ok(T value) => new(true, value, null, null);
 
-        public new static Result<T> Fail(Dictionary<string, List<string>> errors) => new(false, default, errors);
+        public new static Result<T> Fail(Dictionary<string, List<string>> errors) => new(false, default, null ,errors);
+        public new static Result<T> Fail(string generalError) => new(false, default, generalError, null);
     }
 }

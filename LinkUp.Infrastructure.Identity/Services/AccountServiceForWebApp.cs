@@ -33,18 +33,12 @@ namespace LinkUp.Infrastructure.Identity.Services
 
             if (user == null)
             {
-                errors[nameof(loginDto)] =
-                    new List<string>() { $"There is no account registered with this username: {loginDto.UserName}"};
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail( $"There is no account registered with this username: {loginDto.UserName}");
             }
 
             if (!user.EmailConfirmed)
             {
-                errors["Email"] =
-                    new List<string>()
-                        { $"This account {loginDto.UserName} is not active, you should check your email" };
-                
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail($"This account {loginDto.UserName} is not active, you should check your email");
             }
 
             var result = await _signInManager.PasswordSignInAsync(user.UserName ?? "", loginDto.Password, false, true);
@@ -53,18 +47,15 @@ namespace LinkUp.Infrastructure.Identity.Services
             {
                 if (result.IsLockedOut)
                 {
-                    errors[""] = new List<string>()
-                        {
-                            $"Your account {loginDto.UserName} has been locked due to multiple failed attempts." +
-                            $" Please try again in 10 minutes. If you don’t remember your password, " +
-                            $"you can go through the password reset process."
-                        };
+                    string error =
+                        $"Your account {loginDto.UserName} has been locked due to multiple failed attempts." +
+                        $" Please try again in 10 minutes. If you don’t remember your password, " +
+                        $"you can go through the password reset process.";
                 
-                    return Result<UserDto>.Fail(errors);
+                    return Result<UserDto>.Fail(error);
                 }
                 
-                errors[""] = new List<string>() { "these credentials are invalid for this user: {user.UserName}" };
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail($"these credentials are invalid for this user: {user.UserName}");
             }
 
             //var rolesList = await _userManager.GetRolesAsync(user);
@@ -94,15 +85,14 @@ namespace LinkUp.Infrastructure.Identity.Services
             var userWithSameUserName = await _userManager.FindByNameAsync(saveDto.UserName);
             if (userWithSameUserName != null)
             {
-                errors[""] = new List<string>() { $"this username: {saveDto.UserName} is already taken." };
-                return Result<UserDto>.Fail(errors);
+                
+                return Result<UserDto>.Fail($"this username: {saveDto.UserName} is already taken.");
             }
 
             var userWithSameEmail = await _userManager.FindByEmailAsync(saveDto.Email);
             if (userWithSameEmail != null)
             {
-                errors[""] = new List<string>() { $"this email: {saveDto.Email} is already taken." };
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail($"this email: {saveDto.Email} is already taken.");
             }
 
             AppUser user = new AppUser
@@ -158,24 +148,22 @@ namespace LinkUp.Infrastructure.Identity.Services
             var userWithSameUserName = await _userManager.Users.FirstOrDefaultAsync(w => w.UserName == saveDto.UserName && w.Id != saveDto.Id);
             if (userWithSameUserName != null)
             {
-                errors[""] = new List<string>() { $"this username: {saveDto.UserName} is already taken."};
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail($"this username: {saveDto.UserName} is already taken.");
                 
             }
 
             var userWithSameEmail = await _userManager.Users.FirstOrDefaultAsync(w => w.Email == saveDto.Email && w.Id != saveDto.Id);
             if (userWithSameEmail != null)
             {
-                errors[""] = new List<string>() { $"this email: {saveDto.Email} is already taken." };
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail($"this email: {saveDto.Email} is already taken.");
             }
 
             var user = await _userManager.FindByIdAsync(saveDto.Id);
 
             if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this user" };
-                return Result<UserDto>.Fail(errors);
+                errors[""] = new List<string>() {  };
+                return Result<UserDto>.Fail( $"There is no account registered with this user");
             }
             
 
@@ -248,8 +236,7 @@ namespace LinkUp.Infrastructure.Identity.Services
 
             if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this username {request.UserName}" };
-                return Result.Fail(errors);
+                return Result.Fail($"There is no account registered with this username {request.UserName}");
             }
 
             var resetUri = await GetResetPasswordUri(user, request.Origin);
@@ -274,8 +261,7 @@ namespace LinkUp.Infrastructure.Identity.Services
             
             if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this user" };
-                return Result.Fail(errors);
+                return Result.Fail($"There is no account registered with this user");
             }
 
             var token= Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
@@ -299,8 +285,7 @@ namespace LinkUp.Infrastructure.Identity.Services
 
             if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this user" };
-                return Result.Fail(errors);
+                return Result.Fail($"There is no account registered with this user");
             }
             await _userManager.DeleteAsync(user);
 
@@ -314,8 +299,7 @@ namespace LinkUp.Infrastructure.Identity.Services
 
            if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this user" };
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail("There is no account registered with this user");
             }
 
             //var rolesList = await _userManager.GetRolesAsync(user);
@@ -341,8 +325,7 @@ namespace LinkUp.Infrastructure.Identity.Services
             
             if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this user" };
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail("There is no account registered with this user");
             }
 
             //var rolesList = await _userManager.GetRolesAsync(user);
@@ -369,8 +352,7 @@ namespace LinkUp.Infrastructure.Identity.Services
 
             if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this user" };
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail("There is no account registered with this user");
             }
 
             var rolesList = await _userManager.GetRolesAsync(user);
@@ -424,19 +406,20 @@ namespace LinkUp.Infrastructure.Identity.Services
         {
             Dictionary<string, List<string>> errors = new();
             var user = await _userManager.FindByIdAsync(userId);
+            
             if (user == null)
             {
-                errors[""] = new List<string>() { $"There is no account registered with this user" };
-                return Result.Fail(errors);
+                return Result<UserDto>.Fail("There is no account registered with this user");
             }
+
 
             token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
             var result = await _userManager.ConfirmEmailAsync(user, token);
             
             if (!result.Succeeded)
             {
-                errors[""] = new List<string>() { $"An error occurred while confirming this email {user.Email}" };
-                return Result.Fail(errors);
+
+                return Result<UserDto>.Fail($"An error occurred while confirming this email {user.Email}");
             }
             
             return Result.Ok();

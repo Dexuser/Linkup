@@ -8,7 +8,7 @@ public class LinkUpContext : DbContext
 {
     DbSet<Post> Posts { get; set; }
     DbSet<Comment> Comments { get; set; }
-    DbSet<FriendshipRequest> FriendshipRequests { get; set; }
+    DbSet<FriendShipRequest> FriendshipRequests { get; set; }
     DbSet<Like> Likes { get; set; }
     
     public LinkUpContext(DbContextOptions<LinkUpContext> options) : base(options)

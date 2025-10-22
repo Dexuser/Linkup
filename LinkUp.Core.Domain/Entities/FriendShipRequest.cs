@@ -2,7 +2,7 @@ using LinkUp.Core.Domain.Entities.Common;
 
 namespace LinkUp.Core.Domain.Entities;
 
-public class FriendshipRequest
+public class FriendShipRequest
 {
     public required int Id { get; set; }
     public required string RequestedByUserId { get; set; }

@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LinkUp.Core.Persistence.EntitiesConfigurations;
 
-public class FriendshipRequestEntityConfiguration : IEntityTypeConfiguration<FriendshipRequest>
+public class FriendshipRequestEntityConfiguration : IEntityTypeConfiguration<FriendShipRequest>
 {
-    public void Configure(EntityTypeBuilder<FriendshipRequest> builder)
+    public void Configure(EntityTypeBuilder<FriendShipRequest> builder)
     {
         builder.HasKey(f => f.Id);
         builder.Property(f => f.RequestedByUserId).HasMaxLength(450).IsRequired();

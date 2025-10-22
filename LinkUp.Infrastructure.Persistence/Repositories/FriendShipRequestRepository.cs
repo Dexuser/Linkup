@@ -4,7 +4,7 @@ using LinkUp.Core.Persistence.Context;
 
 namespace LinkUp.Core.Persistence.Repositories;
 
-public class FriendShipRequestRepository : GenericRepository<FriendshipRequest>, IFriendShipRequestRepository 
+public class FriendShipRequestRepository : GenericRepository<FriendShipRequest>, IFriendShipRequestRepository 
 {
     public FriendShipRequestRepository(LinkUpContext context) : base(context)
     {

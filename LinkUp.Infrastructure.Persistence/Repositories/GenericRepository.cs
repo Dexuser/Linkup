@@ -13,7 +13,7 @@ public class GenericRepository<TEntity> : IGenericRepository<TEntity>  where TEn
         this.Context = context;
     }
 
-    public async Task<List<TEntity>> GetAllAsync(TEntity entity)
+    public async Task<List<TEntity>> GetAllAsync()
     {
         return await Context.Set<TEntity>().ToListAsync();
     }
