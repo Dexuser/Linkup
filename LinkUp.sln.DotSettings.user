@@ -19,4 +19,5 @@
   &lt;Assembly Path="C:\Users\luis-\.dotnet\packs\Microsoft.AspNetCore.App.Ref\9.0.2\ref\net9.0\Microsoft.AspNetCore.CookiePolicy.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\luis-\.nuget\packages\microsoft.aspnetcore.identity.entityframeworkcore\9.0.10\lib\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\luis-\.dotnet\packs\Microsoft.AspNetCore.App.Ref\9.0.2\ref\net9.0\Microsoft.AspNetCore.dll" /&gt;&#xD;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	</wpf:ResourceDictionary>
