@@ -9,7 +9,6 @@
     <ItemGroup>
       <Folder Include="Mappings\DtosAndEntities\" />
       <Folder Include="Mappings\DtosAndViewModels\" />
-      <Folder Include="Viewmodels\" />
     </ItemGroup>
 
     <ItemGroup>
