@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Helpers\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.10" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
         <PrivateAssets>all</PrivateAssets>
@@ -24,6 +20,11 @@
       <ProjectReference Include="..\LinkUp.Infrastructure.Identity\LinkUp.Infrastructure.Identity.csproj" />
       <ProjectReference Include="..\LinkUp.Infrastructure.Persistence\LinkUp.Infrastructure.Persistence.csproj" />
       <ProjectReference Include="..\LinkUp.Infrastructure.Shared\LinkUp.Infrastructure.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\Images\" />
+      <Folder Include="wwwroot\Images\users\" />
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,348 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model HomeIndexViewModel
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid gedf-wrapper">
+    <div class="row">
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="h5">LeeCross</div>
+                    <div class="h7 text-muted">Fullname : Miracles Lee Cross</div>
+                    <div class="h7">Developer of web applications, JavaScript, PHP, Java, Python, Ruby, Java, Node.js,
+                        etc.
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="h6 text-muted">Followers</div>
+                        <div class="h5">5.2342</div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="h6 text-muted">Following</div>
+                        <div class="h5">6758</div>
+                    </li>
+                    <li class="list-group-item">Vestibulum at eros</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-md-6 gedf-main">
+            @{
+                if (ViewBag.Message != null)
+                {
+                    @if (ViewBag.Message is string)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <p class="text-center">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            @foreach (var line in ViewBag.Message)
+                            {
+                                <p class="text-center">@line</p>
+                            }
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                }
+            }
+            
+            <!--- \\\\\\\Post-->
+            <div class="card gedf-card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts"
+                                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                                Crear una publicación
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                            <form asp-controller="Home" asp-action="Post" enctype="multipart/form-data">
+                                <div class="mb-2">
+                                    <textarea asp-for="PostCreateViewModel.Text" class="form-control" rows="4"
+                                              placeholder="En que estas pensando?"></textarea>
+                                    <span class="text-danger" asp-validation-for="PostCreateViewModel.Text"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <label asp-for="PostCreateViewModel.ImageFile">Imagen</label>
+                                    <input asp-for="PostCreateViewModel.ImageFile" class="form-control"/>
+                                    <span class="text-danger" asp-validation-for="PostCreateViewModel.ImageFile"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <label asp-for="PostCreateViewModel.VideoUrl">URL del video</label>
+                                    <input asp-for="PostCreateViewModel.VideoUrl" class="form-control"/>
+                                    <span class="text-danger" asp-validation-for="PostCreateViewModel.VideoUrl"></span>
+                                </div>
+                                <div class="mb-2">
+                                    <button class="btn btn-primary" type="submit">Publicar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Post /////-->
+
+
+            @foreach (var post in Model.Posts)
+            {
+                <!--- \\\\\\\Post-->
+                <div class="card gedf-card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="mr-1 me-2">
+                                    <img class="rounded-circle" width="45" src="@(post.User!.PhotoPath!)" alt="Imagen de perfil">
+                                </div>
+                                <div class="ml-2">
+                                    <div class="h5 m-0">@post.User.FirstName</div>
+                                    <div class="h7 text-muted">@($"{post.User.FirstName} {post.User.LastName}")</div>
+                                </div>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="bi bi-three-dots" style="color: blue;"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Editar</a></li>
+                                    <li><a class="dropdown-item" href="#">Eliminar</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="text-muted h7 mb-2"><i class="fa fa-clock-o"></i>@post.CreatedAt.ToShortDateString()</div>
+                        <p class="card-text">@post.Text</p>
+                        
+                        @if (!string.IsNullOrEmpty(post.ImagePath))
+                        {
+                            <img class="card-img-top" src="@(post.ImagePath)"/>
+                        }
+                        @if (!string.IsNullOrEmpty(post.VideoUrl))
+                        {
+                            var embedUrl = post.VideoUrl.Replace("watch?v=", "embed/");
+
+                            <div class="ratio ratio-16x9 mt-2">
+                                <iframe src="@embedUrl"
+                                        title="Video de YouTube"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                        }
+                            
+                        
+                    </div>
+                    <div class="card-footer">
+                        <!--TODO Agregar funcionalidad de Megusta y no me gusta al POST, Quizas agregar java script aqui-->
+                        <a href="#" class="card-link"><i class="fa fa-gittip"></i>Me gusta</a>
+                        <a href="#" class="card-link"><i class="fa fa-gittip"></i>No gusta</a>
+
+                        <div class="border-top footer text-muted mt-2">
+                            <div class="text-muted mt-1 mb-2">Comentarios</div>
+
+                            @foreach (var comment in post.Comments)
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary-subtle">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="card-title">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="mr-1 me-2">
+                                                        <img class="rounded-circle" width="30" src="@(comment.Author!.PhotoPath)" alt="Imagen de perfil">
+                                                    </div>
+                                                    <div class="ml-2">
+                                                        <div class="h7">@($"{post.User.FirstName} {post.User.LastName}")</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                   </div>
+                                   <div class="card-body">
+                                        <p class="card-text">@comment.Text</p>
+                                    </div>
+                                   <div class="card-footer">
+                                       @foreach (var reply in comment.Replies)
+                                       {
+                                           <div class="card mb-1">
+                                               <div class="card-header">
+                                                   <div class="d-flex justify-content-between align-items-center">
+                                                       <div class="card-title">
+                                                           <div class="d-flex justify-content-between align-items-center">
+                                                               <div class="mr-1 me-2">
+                                                                   <img class="rounded-circle" width="25" src="@(reply.Author!.PhotoPath)" alt="Imagen de perfil">
+                                                               </div>
+                                                               <div class="ml-2">
+                                                                   <div class="h7">@($"{reply.Author.FirstName} {reply.Author.LastName}")</div>
+                                                               </div>
+                                                           </div>
+                                                       </div>
+                                                   </div>
+                                               </div>
+                                               <div class="card-body">
+                                                   <p class="card-text">@reply.Text</p>
+                                               </div>
+                                           </div>
+                                           
+                                       }
+                                       <div class="card bg-light mt-2">
+                                               <div class="container-fluid mt-3">
+                                                   <form asp-controller="Home" asp-action="CreateComment" method="post">
+                                                       <input type="hidden" asp-for="CommentCreateViewModel.AuthorId" value="@currentUserId"/>
+                                                       <input type="hidden" asp-for="CommentCreateViewModel.PostId" value="@post.Id"/>
+                                                       <input type="hidden" asp-for="CommentCreateViewModel.ParentCommentId" value="@comment.Id"/>
+
+                                                       <div class="d-flex align-items-start mb-2">
+                                                           <textarea asp-for="CommentCreateViewModel.Text"
+                                                             class="form-control me-2"
+                                                             rows="2"
+                                                             placeholder="Responde a este mismo comentario"
+                                                             style="resize: none; flex: 1;"></textarea>
+                                                           <button class="btn btn-primary" type="submit">Responder</button>
+                                                       </div>
+
+                                                       <span class="text-danger"
+                                                             asp-validation-for="CommentCreateViewModel.Text"></span>
+                                                   </form>
+                                           </div>
+                                       </div>
+
+                                   </div>
+                                </div>
+                            }
+                            
+                            <div class="card bg-light mt-2">
+                                <div class="container-fluid mt-3">
+                                    <form asp-controller="Home" asp-action="CreateComment" method="post">
+                                        <input type="hidden" asp-for="CommentCreateViewModel.AuthorId" value="@currentUserId"/>
+                                        <input type="hidden" asp-for="CommentCreateViewModel.PostId" value="@post.Id"/>
+
+                                        <div class="d-flex align-items-start mb-2">
+                                            <textarea asp-for="CommentCreateViewModel.Text"
+                                                             class="form-control me-2"
+                                                             rows="2"
+                                                             placeholder="Comenta este post"
+                                                             style="resize: none; flex: 1;"></textarea>
+                                            <button class="btn btn-primary" type="submit">Comentar</button>
+                                        </div>
+
+                                        <span class="text-danger"
+                                              asp-validation-for="CommentCreateViewModel.Text"></span>
+                                    </form>
+                                </div>                               
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Post /////-->
+            }
+
+
+
+
+
+
+
+
+
+            <!--- \\\\\\\Post-->
+            <div class="card gedf-card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="mr-1 me-2">
+                                <img class="rounded-circle" width="45" src="https://picsum.photos/50/50" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <div class="h5 m-0">LeeCross</div>
+                                <div class="h7 text-muted">Miracles Lee Cross</div>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="bi bi-three-dots" style="color: blue;"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="text-muted h7 mb-2"><i class="fa fa-clock-o"></i>10 min ago</div>
+                    <a class="card-link" href="#">
+                        <h5 class="card-title">Lorem ipsum dolor sit amet, consectetur adip.</h5>
+                    </a>
+
+                    <p class="card-text">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo recusandae nulla rem eos ipsa
+                        praesentium esse magnam nemo dolor
+                        sequi fuga quia quaerat cum, obcaecati hic, molestias minima iste voluptates.
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+                    <a href="#" class="card-link"><i class="fa fa-comment"></i> Comment</a>
+                    <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
+                </div>
+            </div>
+            <!-- Post /////-->
+        </div>
+
+        <div class="col-md-3">
+            <div class="card gedf-card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                        the
+                        card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+            <div class="card gedf-card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of
+                        the
+                        card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+    
 </div>
+
+
+
+
+    
+    

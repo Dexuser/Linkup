@@ -27,7 +27,6 @@ namespace LinkUp.Infrastructure.Identity.Services
         // En el ModelState, los Empty strings serán los errores generales
         public async Task<Result<UserDto>> AuthenticateAsync(LoginDto loginDto)
         {
-            Dictionary<string, List<string>> errors = new();
             
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
 
@@ -80,7 +79,6 @@ namespace LinkUp.Infrastructure.Identity.Services
         
         public async Task<Result<UserDto>> RegisterUser(UserSaveDto saveDto, string origin)
         {
-            Dictionary<string, List<string>> errors = new();
             
             var userWithSameUserName = await _userManager.FindByNameAsync(saveDto.UserName);
             if (userWithSameUserName != null)
@@ -109,8 +107,7 @@ namespace LinkUp.Infrastructure.Identity.Services
             var result = await _userManager.CreateAsync(user, saveDto.Password);
             if (!result.Succeeded)
             {
-                errors[""] = result.Errors.Select(s => s.Description).ToList();
-                return Result<UserDto>.Fail(errors);
+                return Result<UserDto>.Fail(result.Errors.Select(s => s.Description).ToList());
             }
             
             //await _userManager.AddToRoleAsync(user, saveDto.Role);
@@ -142,7 +139,6 @@ namespace LinkUp.Infrastructure.Identity.Services
         
         public async Task<Result<UserDto>> EditUser(UserSaveDto saveDto, string origin,bool? isCreated = false)
         {
-            Dictionary<string, List<string>> errors = new();
             bool isNotcreated = !isCreated ?? false;
 
             var userWithSameUserName = await _userManager.Users.FirstOrDefaultAsync(w => w.UserName == saveDto.UserName && w.Id != saveDto.Id);
@@ -162,7 +158,6 @@ namespace LinkUp.Infrastructure.Identity.Services
 
             if (user == null)
             {
-                errors[""] = new List<string>() {  };
                 return Result<UserDto>.Fail( $"There is no account registered with this user");
             }
             
@@ -182,8 +177,8 @@ namespace LinkUp.Infrastructure.Identity.Services
 
                 if (!resultChange.Succeeded)
                 {
-                    errors[""] = resultChange.Errors.Select(s => s.Description).ToList();
-                    return Result<UserDto>.Fail(errors);
+                    
+                    return Result<UserDto>.Fail(resultChange.Errors.Select(s => s.Description).ToList());
                 }
             }
 
@@ -191,8 +186,8 @@ namespace LinkUp.Infrastructure.Identity.Services
             
             if (!result.Succeeded)
             {
-                errors[""] = result.Errors.Select(s => s.Description).ToList();
-                return Result<UserDto>.Fail(errors);
+                
+                return Result<UserDto>.Fail(result.Errors.Select(s => s.Description).ToList());
             }
            
             //var rolesList = await _userManager.GetRolesAsync(user);
@@ -229,9 +224,6 @@ namespace LinkUp.Infrastructure.Identity.Services
 
         public async Task<Result> ForgotPasswordAsync(ForgotPasswordRequestDto request)
         {
-            
-            Dictionary<string, List<string>> errors = new();
-
             var user = await _userManager.FindByNameAsync(request.UserName);
 
             if (user == null)
@@ -256,7 +248,6 @@ namespace LinkUp.Infrastructure.Identity.Services
 
         public async Task<Result> ResetPasswordAsync(ResetPasswordRequestDto request)
         {
-            Dictionary<string, List<string>> errors = new();
             var user = await _userManager.FindByIdAsync(request.Id);
             
             if (user == null)
@@ -269,8 +260,7 @@ namespace LinkUp.Infrastructure.Identity.Services
             
             if (!result.Succeeded)
             {
-                errors[""] = result.Errors.Select(s => s.Description).ToList();
-                return Result.Fail(errors);
+                return Result<UserDto>.Fail(result.Errors.Select(s => s.Description).ToList());
             }
 
             user.EmailConfirmed = true;
@@ -280,7 +270,6 @@ namespace LinkUp.Infrastructure.Identity.Services
         }
         public async Task<Result> DeleteAsync(string id)
         {
-            Dictionary<string, List<string>> errors = new();
             var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
@@ -294,7 +283,6 @@ namespace LinkUp.Infrastructure.Identity.Services
         
         public async Task<Result<UserDto>> GetUserByEmail(string email)
         {
-            Dictionary<string, List<string>> errors = new();
             var user = await _userManager.FindByEmailAsync(email);
 
            if (user == null)
@@ -320,7 +308,6 @@ namespace LinkUp.Infrastructure.Identity.Services
         
         public async Task<Result<UserDto>> GetUserById(string id)
         {
-            Dictionary<string, List<string>> errors = new();
             var user = await _userManager.FindByIdAsync(id);
             
             if (user == null)
@@ -344,10 +331,27 @@ namespace LinkUp.Infrastructure.Identity.Services
             
             return Result<UserDto>.Ok(userDto);
         }
-        
+
+        public async Task<Result<List<UserDto>>> GetUsersByIds(List<string> ids)
+        {
+            var users = await _userManager.Users.Where(u => ids.Contains(u.Id))
+                .Select(user => new UserDto()
+                {
+                    Id = user.Id,
+                    Email = user.Email ?? "",
+                    UserName = user.UserName ?? "",
+                    FirstName = user.FirstName ?? "",
+                    LastName = user.LastName,
+                    IsVerified = user.EmailConfirmed,
+                    Phone = user.PhoneNumber,
+                    PhotoPath = user.PhotoPath
+                })
+                .ToListAsync();
+            return Result<List<UserDto>>.Ok(users);
+        }
+
         public async Task<Result<UserDto>> GetUserByUserName(string userName)
         {
-            Dictionary<string, List<string>> errors = new();
             var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null)
@@ -404,7 +408,6 @@ namespace LinkUp.Infrastructure.Identity.Services
         }
         public async Task<Result> ConfirmAccountAsync(string userId, string token)
         {
-            Dictionary<string, List<string>> errors = new();
             var user = await _userManager.FindByIdAsync(userId);
             
             if (user == null)

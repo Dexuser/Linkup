@@ -1,4 +1,6 @@
-﻿using LinkUp.Core.Persistence.Context;
+﻿using LinkUp.Core.Domain.Interfaces;
+using LinkUp.Core.Persistence.Context;
+using LinkUp.Core.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +25,11 @@ public static class ServicesRegistration
             optionsLifetime: ServiceLifetime.Scoped
         );
         
+        services.AddScoped(typeof(IGenericRepository<>),  typeof(GenericRepository<>));
+        services.AddScoped<IPostRepository, PostRepository>();
+        services.AddScoped<ILikeRepository, LikeRepository>();
+        services.AddScoped<IFriendShipRequestRepository, FriendShipRequestRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
         return services;
     }
 }

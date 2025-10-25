@@ -1,4 +1,5 @@
 using LinkUp.Core.Application.Dtos.Comment;
+using LinkUp.Core.Application.Dtos.User;
 
 namespace LinkUp.Core.Application.Dtos.Post;
 
@@ -12,4 +13,5 @@ public class PostDto
     public DateTime CreatedAt { get; set; }
 
     public ICollection<CommentDto> Comments { get; set; } = []; // deberias de usar el Include
+    public UserDto? User { get; set; }
 }
