@@ -12,6 +12,6 @@ public class LikeMappingProfile : Profile
 {
     public LikeMappingProfile()
     {
-        CreateMap<Like, LikeDto>();
+        CreateMap<Like, LikeDto>().ReverseMap();
     }
 }

@@ -11,6 +11,6 @@ public class LikeEntityConfiguration : IEntityTypeConfiguration<Like>
         builder.HasKey(l => l.Id);
         builder.Property(l => l.PostId).IsRequired();
         builder.Property(l => l.UserId).HasMaxLength(450).IsRequired();
-        builder.Property(l => l.IsLiked).IsRequired();
+        builder.Property(l => l.IsLiked).HasDefaultValue(null);
     }
 }

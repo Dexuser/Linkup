@@ -14,16 +14,18 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
     private readonly ICommentRepository _commentRepository;
     private readonly IFriendShipRequestRepository _friendShipRequestRepository;
     private readonly IAccountServiceForWebApp _accountServiceForWebApp;
+    private readonly ILikeRepository _likeRepository;
     private readonly IMapper _mapper;
 
     public PostService(IPostRepository repository, IMapper mapper, ICommentRepository commentRepository,
-        IFriendShipRequestRepository friendShipRequestRepository, IAccountServiceForWebApp accountServiceForWebApp) : base(repository, mapper)
+        IFriendShipRequestRepository friendShipRequestRepository, IAccountServiceForWebApp accountServiceForWebApp, ILikeRepository likeRepository) : base(repository, mapper)
     {
         _postRepository = repository;
         _mapper = mapper;
         _commentRepository = commentRepository;
         _friendShipRequestRepository = friendShipRequestRepository;
         _accountServiceForWebApp = accountServiceForWebApp;
+        _likeRepository = likeRepository;
     }
 
 
@@ -35,6 +37,7 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
 
+            /*
             var comments = await _commentRepository.GetAllQueryable()
                 .AsNoTracking()
                 .Where(c => c.PostId == id)
@@ -46,9 +49,10 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
             {
                 return Result<PostDto>.Fail(userResult.GeneralError!);
             }
-        
+            */
+            //postDto.Comments = _mapper.Map<List<CommentDto>>(comments); ;
+            
             var postDto = _mapper.Map<PostDto>(post);
-            postDto.Comments = _mapper.Map<List<CommentDto>>(comments); ;
             return Result<PostDto>.Ok(postDto);
         }
         catch (Exception ex)
@@ -67,6 +71,8 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
             {
                 return Result<List<PostDto>>.Fail(result.GeneralError!);
             }
+            
+
             
             // Todos los posts de este usuario
             var posts = await _postRepository.GetAllQueryable()
@@ -108,10 +114,15 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
                 .GroupBy(c => c.PostId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
+            // todos los likes o dislikes que tiene este usuario a estos posts pasados
+            var likesAndDislikes = await _likeRepository.GetAllQueryable().AsNoTracking()
+                .Where(l => l.UserId == userId && postsIds.Contains(l.PostId))
+                .ToDictionaryAsync(l => l.PostId, l => (bool?)l.IsLiked);
             foreach (var postDto in postsDtos)
             {
                 postDto.Comments = commentsByPostId.GetValueOrDefault(postDto.Id) ?? new List<CommentDto>();
                 postDto.User = result.Value!;
+                postDto.IsLikedByUserInThisSession = likesAndDislikes.GetValueOrDefault(postDto.Id);
             }
 
             return Result<List<PostDto>>.Ok(postsDtos);
@@ -169,12 +180,23 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
         var commentsByPostId = commentsDtos
             .GroupBy(c => c.PostId)
             .ToDictionary(g => g.Key, g => g.ToList());
-
+        
+        var likesAndDislikes = await _likeRepository.GetAllQueryable().AsNoTracking()
+            .Where(l => l.UserId == userId && postsIds.Contains(l.PostId))
+            .ToDictionaryAsync(l => l.PostId, l => l.IsLiked);
+            
         foreach (var postDto in postsDtos)
         {
             postDto.Comments = commentsByPostId.GetValueOrDefault(postDto.Id) ?? new List<CommentDto>();
+            postDto.IsLikedByUserInThisSession = likesAndDislikes.GetValueOrDefault(postDto.Id);
         }
             
         return Result<List<PostDto>>.Ok(_mapper.Map<List<PostDto>>(posts));
+    }
+
+    public override async Task<Result> DeleteAsync(int id)
+    {
+        await _commentRepository.GetAllQueryable().Where(c => c.PostId == id).ExecuteDeleteAsync();
+        return await base.DeleteAsync(id);
     }
 }

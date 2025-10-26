@@ -15,4 +15,5 @@ public class PostViewModel
 
     public ICollection<CommentViewModel> Comments { get; set; } = []; // deberias de usar el Include
     public UserViewModel? User { get; set; }
+    public bool? IsLikedByUserInThisSession { get; set; }
 }

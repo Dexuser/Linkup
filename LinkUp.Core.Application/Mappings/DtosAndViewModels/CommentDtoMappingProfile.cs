@@ -10,6 +10,7 @@ public class CommentDtoMappingProfile : Profile
     public CommentDtoMappingProfile()
     {
         CreateMap<CommentDto, CommentViewModel>().ReverseMap();
+        CreateMap<CommentEditViewModel, CommentDto>().ReverseMap();
         CreateMap<CommentCreateViewModel, CommentDto>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ReverseMap();

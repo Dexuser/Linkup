@@ -18,4 +18,8 @@
       <ProjectReference Include="..\LinkUp.Core.Domain\LinkUp.Core.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>

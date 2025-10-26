@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LinkUp.Core.Persistence.Migrations
 {
     [DbContext(typeof(LinkUpContext))]
-    [Migration("20251021234204_Initial")]
+    [Migration("20251026041638_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace LinkUp.Core.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.Comment", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace LinkUp.Core.Persistence.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.FriendshipRequest", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.FriendShipRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace LinkUp.Core.Persistence.Migrations
                     b.ToTable("FriendshipRequests");
                 });
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.Like", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.Like", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,7 +116,7 @@ namespace LinkUp.Core.Persistence.Migrations
                     b.ToTable("Likes");
                 });
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.Post", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.Post", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -147,14 +147,13 @@ namespace LinkUp.Core.Persistence.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.Comment", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.Comment", b =>
                 {
-                    b.HasOne("LinkUp.Core.Persistence.Entities.Comment", "ParentComment")
+                    b.HasOne("LinkUp.Core.Domain.Entities.Comment", "ParentComment")
                         .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ParentCommentId");
 
-                    b.HasOne("LinkUp.Core.Persistence.Entities.Post", null)
+                    b.HasOne("LinkUp.Core.Domain.Entities.Post", null)
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -163,9 +162,9 @@ namespace LinkUp.Core.Persistence.Migrations
                     b.Navigation("ParentComment");
                 });
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.Like", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.Like", b =>
                 {
-                    b.HasOne("LinkUp.Core.Persistence.Entities.Post", "Post")
+                    b.HasOne("LinkUp.Core.Domain.Entities.Post", "Post")
                         .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -174,12 +173,12 @@ namespace LinkUp.Core.Persistence.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.Comment", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.Comment", b =>
                 {
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("LinkUp.Core.Persistence.Entities.Post", b =>
+            modelBuilder.Entity("LinkUp.Core.Domain.Entities.Post", b =>
                 {
                     b.Navigation("Comments");
                 });

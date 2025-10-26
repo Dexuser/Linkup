@@ -5,5 +5,5 @@ namespace LinkUp.Core.Application.Interfaces;
 
 public interface ILikeService : IGenericService<LikeDto>
 {
-    
+    Task<Result<LikeDto>> GetThisLikeByPostIdAndUserId(int postId, string userId);
 }

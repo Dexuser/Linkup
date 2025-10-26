@@ -15,10 +15,11 @@ public class CommentEntityConfiguration : IEntityTypeConfiguration<Comment>
         builder.Property(x => x.ParentCommentId).HasMaxLength(450); // comentario al que responde
         //builder.Property(x => x.ReplyToUserId); nullable
         
+        builder.HasOne<Post>().WithMany(p => p.Comments).HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
+
         builder.HasOne(c => c.ParentComment)
             .WithMany(c => c.Replies)
-            .HasForeignKey(c => c.ParentCommentId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasForeignKey(c => c.ParentCommentId);
     }
     
 }

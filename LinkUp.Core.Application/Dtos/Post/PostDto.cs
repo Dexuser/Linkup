@@ -14,4 +14,6 @@ public class PostDto
 
     public ICollection<CommentDto> Comments { get; set; } = []; // deberias de usar el Include
     public UserDto? User { get; set; }
+    
+    public bool? IsLikedByUserInThisSession { get; set; }
 }
