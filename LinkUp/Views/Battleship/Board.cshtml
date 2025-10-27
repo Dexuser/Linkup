@@ -1,0 +1,214 @@
+@model BoardViewModel 
+
+@{
+    ViewBag.Title = "Elige la posicion de tu barco";
+    Layout = "_Layout";
+}
+
+
+<div class="battleship-board">
+    <!-- Encabezado -->
+    <div class="board-row">
+        <div class="board-cell coordinate-cell"></div>
+        @for (int x = 0; x < 12; x++)
+        {
+            <div class="board-cell coordinate-cell">
+                <strong>@((char)('A' + x))</strong>
+            </div>
+        }
+    </div>
+
+    <!-- Filas -->
+    @for (int x = 0; x < 12; x++)
+    {
+        <div class="board-row">
+            <div class="board-cell coordinate-cell">
+                <strong>@(x + 1)</strong>
+            </div>
+
+            @for (int y = 0; y < 12; y++)
+            {
+                var celda = Model.Cells[x][y];
+                               
+                <div class="board-cell">
+                    @if (celda.CanBeSelected)
+                    {
+                        
+                        <a asp-controller="Battleship"
+                           asp-action="@(Model.Type == BoardType.Attack ? "Attack" : "SetShipPositionPost")"
+                           asp-route-gameId="@Model.GameId"
+                           asp-route-x="@celda.X"
+                           asp-route-y="@celda.Y"
+                           asp-route-selectedShip="@((int)Model.SelectedShip!)"
+                           class="btn @celda.CssClass cell-link">
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="btn @celda.CssClass cell-disabled">
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    /* ===== CONTENEDOR PRINCIPAL ===== */
+    .battleship-container {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    /* ===== TABLERO ===== */
+    .battleship-board {
+        display: inline-block;
+        border: 2px solid #343a40;
+        background-color: #e9ecef;
+        padding: 5px;
+        border-radius: 5px;
+        margin: 0 auto;
+    }
+
+    /* ===== FILAS DEL TABLERO ===== */
+    .board-row {
+        display: flex;
+    }
+
+    /* ===== CELDAS ===== */
+    .board-cell {
+        width: 40px;
+        height: 40px;
+        margin: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Celdas de coordenadas */
+    .coordinate-cell {
+        background-color: #495057;
+        color: white;
+        font-weight: bold;
+        border: 1px solid #343a40;
+        font-size: 0.8rem;
+    }
+
+    /* Enlaces de celdas seleccionables */
+    .cell-link {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border: 1px solid #6c757d;
+        border-radius: 3px;
+        padding: 0;
+        font-size: 1rem;
+    }
+
+    .cell-link:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+
+    /* Celdas deshabilitadas */
+    .cell-disabled {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ced4da;
+        border-radius: 3px;
+        padding: 0;
+        font-size: 1rem;
+        cursor: not-allowed;
+    }
+
+    /* ===== ESTADOS DE LAS CELDAS ===== */
+
+    /* Celda vacía (sin atacar) */
+    .cell-empty {
+        background-color: #cfe2ff;
+        border-color: #6ea8fe;
+        color: #052c65;
+    }
+
+    /* Agua (ataque fallido) */
+    .cell-water {
+        background-color: #a3d9ff;
+        border-color: #6ec6ff;
+        color: #0069c0;
+    }
+
+    /* Impacto (ataque acertado) */
+    .cell-hit {
+        background-color: #f5c6cb;
+        border-color: #e6858f;
+        color: #721c24;
+    }
+
+    /* Barco posicionado */
+    .cell-ship {
+        background-color: #6c757d;
+        border-color: #495057;
+        color: white;
+    }
+
+    /* Barco hundido */
+    .cell-sunk {
+        background-color: #dc3545;
+        border-color: #a71e2a;
+        color: white;
+    }
+
+    /* ===== ESTADO DEL JUEGO ===== */
+    .game-status {
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        margin: 15px auto;
+        max-width: 600px;
+    }
+
+    /* ===== LEYENDA ===== */
+    .legend {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin: 5px 0;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        border: 1px solid #6c757d;
+        border-radius: 3px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @@media (max-width: 768px) {
+    .board-cell {
+        width: 30px;
+        height: 30px;
+    }
+
+    .cell-link, .cell-disabled {
+        font-size: 0.8rem;
+    }
+
+    .coordinate-cell {
+        font-size: 0.7rem;
+    }
+    }
+</style>

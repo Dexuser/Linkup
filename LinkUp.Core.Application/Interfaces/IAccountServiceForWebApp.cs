@@ -15,6 +15,6 @@ public interface IAccountServiceForWebApp
     Task<Result<UserDto>> GetUserById(string id);
     Task<Result<List<UserDto>>> GetUsersByIds(List<string> ids);
     Task<Result<UserDto>> GetUserByUserName(string userName);
-    Task<List<UserDto>> GetAllUser(bool? isActive = true);
+    Task<Result<List<UserDto>>> GetAllUser(bool? isActive = true);
     Task<Result> ConfirmAccountAsync(string userId, string token);
 }

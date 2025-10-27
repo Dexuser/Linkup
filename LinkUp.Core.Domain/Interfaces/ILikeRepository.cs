@@ -4,5 +4,4 @@ namespace LinkUp.Core.Domain.Interfaces;
 
 public interface ILikeRepository : IGenericRepository<Like>
 {
-    
 }

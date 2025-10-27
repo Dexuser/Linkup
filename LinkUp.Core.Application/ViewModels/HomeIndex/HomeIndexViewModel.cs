@@ -1,7 +1,7 @@
-using LinkUp.Core.Application.Viewmodels.Comment;
-using LinkUp.Core.Application.Viewmodels.Post;
+using LinkUp.Core.Application.ViewModels.Comment;
+using LinkUp.Core.Application.ViewModels.Post;
 
-namespace LinkUp.Core.Application.Viewmodels.HomeIndex;
+namespace LinkUp.Core.Application.ViewModels.HomeIndex;
 
 public class HomeIndexViewModel
 {

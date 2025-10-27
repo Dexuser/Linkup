@@ -375,7 +375,7 @@ namespace LinkUp.Infrastructure.Identity.Services
 
             return Result<UserDto>.Ok(userDto);
         }
-        public async Task<List<UserDto>> GetAllUser(bool? isActive = true)
+        public async Task<Result<List<UserDto>>> GetAllUser(bool? isActive = true)
         {
             List<UserDto> listUsersDtos = [];
 
@@ -403,8 +403,7 @@ namespace LinkUp.Infrastructure.Identity.Services
                     PhotoPath = user.PhotoPath
                 });
             }
-
-            return listUsersDtos;
+            return Result<List<UserDto>>.Ok(listUsersDtos);
         }
         public async Task<Result> ConfirmAccountAsync(string userId, string token)
         {

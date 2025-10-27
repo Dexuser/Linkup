@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace LinkUp.Core.Application.Viewmodels.User;
 
 public class LoginViewModel
 {

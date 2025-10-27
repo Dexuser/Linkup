@@ -1,7 +1,7 @@
 using AutoMapper;
 using LinkUp.Core.Application.Dtos.User;
 using LinkUp.Core.Application.Interfaces;
-using LinkUp.Core.Application.Viewmodels.User;
+using LinkUp.Core.Application.ViewModels.User;
 using LinkUp.Helpers;
 using LinkUp.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Authorization;

@@ -1,7 +1,6 @@
 using AutoMapper;
 using LinkUp.Core.Application.Dtos.Comment;
-using LinkUp.Core.Application.Viewmodels.Comment;
-using LinkUp.Core.Domain.Entities;
+using LinkUp.Core.Application.ViewModels.Comment;
 
 namespace LinkUp.Core.Application.Mappings.DtosAndViewModels;
 

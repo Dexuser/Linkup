@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Views\Tablero\" />
       <Folder Include="wwwroot\Images\" />
     </ItemGroup>
 

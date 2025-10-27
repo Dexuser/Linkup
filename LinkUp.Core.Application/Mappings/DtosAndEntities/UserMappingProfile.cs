@@ -1,7 +1,6 @@
 using AutoMapper;
 using LinkUp.Core.Application.Dtos.User;
-using LinkUp.Core.Application.Viewmodels.User;
-
+using LinkUp.Core.Application.ViewModels.User;
 namespace LinkUp.Core.Application.Mappings.DtosAndEntities;
 
 public class UserMappingProfile : Profile
@@ -17,6 +16,7 @@ public class UserMappingProfile : Profile
 
         CreateMap<LoginViewModel, LoginDto>().ReverseMap();
         CreateMap<UserDto, UserViewModel>().ReverseMap();
+        CreateMap<UserWithCommonFriendCountDto, UserWithCommonFriendCountViewModel>().ReverseMap();
 
     }
 }

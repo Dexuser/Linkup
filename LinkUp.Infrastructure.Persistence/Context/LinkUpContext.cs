@@ -9,7 +9,13 @@ public class LinkUpContext : DbContext
     DbSet<Post> Posts { get; set; }
     DbSet<Comment> Comments { get; set; }
     DbSet<FriendShipRequest> FriendshipRequests { get; set; }
+    DbSet<FriendShip> FriendShips { get; set; }
     DbSet<Like> Likes { get; set; }
+    
+    public DbSet<BattleshipGame> BattleshipGames { get; set; }
+    public DbSet<Ship> Ships { get; set; }
+    public DbSet<ShipPosition> ShipPositions { get; set; }
+    public DbSet<Attack> Attacks { get; set; }
     
     public LinkUpContext(DbContextOptions<LinkUpContext> options) : base(options)
     {

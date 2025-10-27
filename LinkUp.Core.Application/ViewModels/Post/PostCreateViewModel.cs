@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace LinkUp.Core.Application.Viewmodels.Post;
+namespace LinkUp.Core.Application.ViewModels.Post;
 
 public class PostCreateViewModel : IValidatableObject
 {

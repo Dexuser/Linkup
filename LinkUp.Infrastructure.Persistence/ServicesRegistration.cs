@@ -29,7 +29,13 @@ public static class ServicesRegistration
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<ILikeRepository, LikeRepository>();
         services.AddScoped<IFriendShipRequestRepository, FriendShipRequestRepository>();
+        services.AddScoped<IFriendShipRepository, FriendShipRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
+        
+        services.AddScoped<IBattleshipGameRepository, BattleshipGameRepository>();
+        services.AddScoped<IShipRepository, ShipRepository>();
+        services.AddScoped<IShipPositionRepository, ShipPositionRepository>();
+        services.AddScoped<IAttackRepository, AttackRepository>();
         return services;
     }
 }

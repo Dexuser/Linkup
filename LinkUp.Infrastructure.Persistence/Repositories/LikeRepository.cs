@@ -1,4 +1,5 @@
 using LinkUp.Core.Domain.Entities;
+using LinkUp.Core.Domain.Entities.Common;
 using LinkUp.Core.Domain.Interfaces;
 using LinkUp.Core.Persistence.Context;
 

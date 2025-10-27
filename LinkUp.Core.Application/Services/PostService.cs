@@ -12,18 +12,18 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
 {
     private readonly IPostRepository _postRepository;
     private readonly ICommentRepository _commentRepository;
-    private readonly IFriendShipRequestRepository _friendShipRequestRepository;
+    private readonly IFriendShipRepository _friendShipRepository;
     private readonly IAccountServiceForWebApp _accountServiceForWebApp;
     private readonly ILikeRepository _likeRepository;
     private readonly IMapper _mapper;
 
     public PostService(IPostRepository repository, IMapper mapper, ICommentRepository commentRepository,
-        IFriendShipRequestRepository friendShipRequestRepository, IAccountServiceForWebApp accountServiceForWebApp, ILikeRepository likeRepository) : base(repository, mapper)
+        IFriendShipRepository friendShipRequestRepository, IAccountServiceForWebApp accountServiceForWebApp, ILikeRepository likeRepository) : base(repository, mapper)
     {
         _postRepository = repository;
         _mapper = mapper;
         _commentRepository = commentRepository;
-        _friendShipRequestRepository = friendShipRequestRepository;
+        _friendShipRepository = friendShipRequestRepository;
         _accountServiceForWebApp = accountServiceForWebApp;
         _likeRepository = likeRepository;
     }
@@ -136,12 +136,8 @@ public class PostService : GenericServices<Post, PostDto>, IPostService
 
     public async Task<Result<List<PostDto>>> GetAllFriendsPosts(string userId)
     {
-        var friendsIds = await _friendShipRequestRepository.GetAllQueryable()
-            .AsNoTracking()
-            .Where(f => f.RequestedByUserId == userId || f.TargetUserId == userId)
-            .Select(f => (f.RequestedByUserId == userId) ? f.TargetUserId : f.RequestedByUserId)
-            .ToListAsync();
-        
+        var friendsIds = await _friendShipRepository.GetAllTheFriendsIds(userId);
+       
         var posts = await _postRepository.GetAllQueryable()
             .AsNoTracking()
             .Where(p => friendsIds.Contains(p.UserId)) 

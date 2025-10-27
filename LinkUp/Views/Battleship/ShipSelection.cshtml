@@ -1,0 +1,109 @@
+@using LinkUp.Core.Domain.Entities.Common
+@model ShipSelectionViewModel
+
+@{
+    ViewBag.Title = "Seleccion de barco";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+        <div class="col-md-5">
+            @{
+                if (ViewBag.Message != null)
+                {
+                    @if (ViewBag.Message is string)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <p class="text-center">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            @foreach (var line in ViewBag.Message)
+                            {
+                                <p class="text-center">@line</p>
+                            }
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                }
+            }
+
+            <div class="card">
+                <div class="card-header fw-bold">
+                    Selecciona un barco
+                </div>
+
+                <form asp-controller="Battleship" asp-action="SetShipPosition" method="get">
+                    <input type="hidden" asp-for="GameId" value="@Model.GameId"/>
+                    <input type="hidden" asp-for="MissingShips" value="@Model.MissingShips"/>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            @*<thead class="table-light sticky-top">
+                            <tr>
+                            </tr>
+                            </thead>*@
+                            <tbody>
+                            @foreach (var item in Model.MissingShips)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="radio"
+                                               value="@((int)item)"
+                                               asp-for="SelectedShip"
+                                               class="form-check-input"
+                                               required/>
+                                    </td>
+                                    <td>
+                                        @switch (item)
+                                        {
+                                            case ShipType.PatrolBoat:
+                                                <text>
+                                                    <p>Lancha patrullera (2 posiciones)</p>
+                                                </text>
+                                                break;
+
+                                            case ShipType.Destroyer:
+                                                <text>
+                                                    <p>Destructor (3 posiciones)</p>
+                                                </text>
+                                                break;
+
+                                            case ShipType.Battleship:
+                                                <text>
+                                                    <p>Acorazado (4 posiciones)</p>
+                                                </text>
+                                                break;
+
+                                            case ShipType.Carrier:
+                                                <text>
+                                                    <p>Buque de transporte (5 posiciones)</p>
+                                                </text>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-footer text-end">
+                        <a asp-controller="BattleShip" asp-action="Index" class="btn btn-danger">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">
+                            Enviar selección
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

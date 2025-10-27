@@ -1,0 +1,72 @@
+﻿@using LinkUp.Core.Domain.Entities.Common
+@model ShipViewModel
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+        <div class="col-md-5">
+            @{
+                if (ViewBag.Message != null)
+                {
+                    @if (ViewBag.Message is string)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <p class="text-center">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            @foreach (var line in ViewBag.Message)
+                            {
+                                <p class="text-center">@line</p>
+                            }
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                }
+            }
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    Selecciona una dirección para tu barco
+                </div>
+                <form asp-controller="Battleship" asp-action="CreateShip" method="post">
+                    <input type="hidden" asp-for="Id" value="@Model.Id"/>
+                    <input type="hidden" asp-for="GameId" value="@Model.GameId"/>
+                    <input type="hidden" asp-for="PlayerId" value="@Model.PlayerId"/>
+                    <input type="hidden" asp-for="Type" value="@Model.Type"/>
+                    <input type="hidden" asp-for="Size" value="@Model.Size"/>
+                    <input type="hidden" asp-for="StartX" value="@Model.StartX"/>
+                    <input type="hidden" asp-for="StartY" value="@Model.StartY"/>
+                    <input type="hidden" asp-for="IsSunk" value="@Model.IsSunk"/>
+                    <div class="card-body">
+                        <select class="form-select" asp-for="Direction">
+                            <option value="@Direction.Up">Arriba</option>
+                            <option value="@Direction.Down">Abajo</option>
+                            <option value="@Direction.Right">Derecha</option>
+                            <option value="@Direction.Left">izquierda</option>
+                        </select>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a asp-controller="Battleship" asp-action="" class="btn btn-danger">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">
+                            Enviar selección
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+

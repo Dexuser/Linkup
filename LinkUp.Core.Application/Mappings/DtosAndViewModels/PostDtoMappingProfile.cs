@@ -1,7 +1,6 @@
 using AutoMapper;
 using LinkUp.Core.Application.Dtos.Post;
-using LinkUp.Core.Application.Viewmodels.Post;
-using LinkUp.Core.Domain.Entities;
+using LinkUp.Core.Application.ViewModels.Post;
 
 namespace LinkUp.Core.Application.Mappings.DtosAndViewModels;
 

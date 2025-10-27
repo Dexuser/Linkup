@@ -1,0 +1,155 @@
+﻿@using System.Security.Claims
+@model BattleshipGameHomeIndex
+@{
+    ViewData["Title"] = "Battleships";
+    Layout = "_Layout";
+    string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+}
+<div class="container-fluid gedf-wrapper">
+    <div class="row">
+        <!-- Panel lateral izquierdo -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+               <nav class="list-group list-group-flush">
+                    <a asp-controller="" asp-action=""
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        LinkUp (Home)
+                    </a>
+                    <a asp-controller="" asp-action=""
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        Amigos
+                    </a>
+                    <a asp-controller="FriendShipRequest" asp-action="Index"
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        Solicitudes de amistad
+                    </a>
+                    <a asp-controller="Battleship" asp-action="Index"
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        Battleship
+                    </a>
+                    <div class="list-group-item bg-light">
+                        <div class="h6 text-muted mb-1">Following</div>
+                        <div class="h5 mb-0 fw-bold">6758</div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+
+        <div class="col-md-7 gedf-main">
+            <div class="row">
+                @{
+                    if (ViewBag.Message != null)
+                    {
+                        @if (ViewBag.Message is string)
+                        {
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <p class="text-center">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                                <br/>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                @foreach (var line in ViewBag.Message)
+                                {
+                                    <p class="text-center">@line</p>
+                                }
+                                <br/>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+                    }
+                }
+
+                <div class="row mt-4">
+                    <table class="table table-sm table-light table-striped">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Contrincante</th>
+                            <th>Fecha de inicio</th>
+                            <th>Tiempo</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model.ActiveGames)
+                        {
+                            <tr>
+                                <td>@(item.Player1Id == currentUserId ? item.Player2!.UserName : item.Player1!.UserName)</td>
+                                <td>@item.StartDate.ToShortDateString()</td>
+                                <td>@((item.EndDate ?? DateTime.Now) - item.StartDate)</td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-warning me-2" asp-controller="Battleship"
+                                       asp-action="EnterTheGame"
+                                       asp-route-gameId="@item.Id"
+                                       >
+                                       Entrar 
+                                    </a>
+
+                                    <a class="btn btn-sm btn-outline-danger" asp-controller="Battleship"
+                                       asp-action="GiveUpTheGame"
+                                       asp-route-FriendShipRequestId="@item.Id"
+                                       asp-route-accepted="false"
+                                       >
+                                       Finalizar 
+                                    </a>
+
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <a class="btn btn-success" asp-controller="Battleship" asp-action="Create">Crear una partida</a>
+                <div class="row mt-4">
+                    <table class="table table-sm table-light table-striped">
+                        <thead class="table-primary">
+                        <tr>
+                            <th>Contrincante</th>
+                            <th>Fecha de inicio</th>
+                            <th>Fecha de finalizacion</th>
+                            <th>Duración</th>
+                            <th>Resultado</th>
+                            <th>Ganador</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model.FinalizedGames)
+                        {
+                            <tr>
+                                <td>@(item.Player1Id == currentUserId ? item.Player2!.UserName : item.Player1!.UserName)</td>
+                                <td>@item.StartDate.ToShortDateString()</td>
+                                <td>@item.EndDate?.ToShortDateString() </td>
+                                <td>@((item.EndDate ?? DateTime.Now) - item.StartDate)</td>
+                                <td>@(item.WinnerId == currentUserId  ? "Victoria" : "Derrota")</td>
+                                <td>
+                                    @(item.WinnerId == currentUserId ? "Yo" : item.Player1Id == currentUserId ? item.Player2!.UserName : item.Player1!.UserName)
+                                </td>
+
+                                <td>
+
+                                    <a class="btn btn-sm btn-outline-danger" asp-controller="Battleship"
+                                       asp-action="Results"
+                                       asp-route-id="@item.Id"
+                                       >
+                                        Ver resultados
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Lateral derecho (opcional) -->
+        <div class="col-md-2">
+       </div>
+    </div>
+</div>

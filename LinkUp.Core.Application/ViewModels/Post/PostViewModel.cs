@@ -1,8 +1,7 @@
-using LinkUp.Core.Application.Dtos.Comment;
-using LinkUp.Core.Application.Viewmodels.Comment;
-using LinkUp.Core.Application.Viewmodels.User;
+using LinkUp.Core.Application.ViewModels.Comment;
+using LinkUp.Core.Application.ViewModels.User;
 
-namespace LinkUp.Core.Application.Viewmodels.Post;
+namespace LinkUp.Core.Application.ViewModels.Post;
 
 public class PostViewModel
 {

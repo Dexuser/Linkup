@@ -1,9 +1,5 @@
 using AutoMapper;
-using LinkUp.Core.Application.Dtos.Comment;
 using LinkUp.Core.Application.Dtos.Like;
-using LinkUp.Core.Application.Dtos.Post;
-using LinkUp.Core.Application.Dtos.User;
-using LinkUp.Core.Application.Viewmodels.User;
 using LinkUp.Core.Domain.Entities;
 
 namespace LinkUp.Core.Application.Mappings.DtosAndEntities;

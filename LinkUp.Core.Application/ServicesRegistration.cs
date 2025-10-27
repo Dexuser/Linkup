@@ -16,7 +16,13 @@ namespace LinkUp.Core.Application
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ILikeService, LIkeService>();
             services.AddScoped<IFriendShipRequestService, FriendShipRequestService>();
+            services.AddScoped<IFriendShipService, FriendShipService>();
             services.AddScoped<ICommentService, CommentService>();
+            
+            services.AddScoped<IBattleshipGameService, BattleshipGameService>();
+            services.AddScoped<IShipService, ShipService>();
+            services.AddScoped<IShipPositionService, ShipPositionService>();
+            services.AddScoped<IAttackService, AttackService>();
         }
     }
 }

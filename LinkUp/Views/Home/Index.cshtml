@@ -1,33 +1,41 @@
 @model HomeIndexViewModel
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Home";
     Layout = "_Layout";
     var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
 <div class="container-fluid gedf-wrapper">
     <div class="row">
-        <!-- Lateral izquierdo -->
+
+        <!-- Panel lateral izquierdo -->
         <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="h5">LeeCross</div>
-                    <div class="h7 text-muted">Fullname : Miracles Lee Cross</div>
-                    <div class="h7">Developer of web applications, JavaScript, PHP, Java, Python, Ruby, Node.js, etc.</div>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <div class="h6 text-muted">Followers</div>
-                        <div class="h5">5.2342</div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="h6 text-muted">Following</div>
-                        <div class="h5">6758</div>
-                    </li>
-                    <li class="list-group-item">Vestibulum at eros</li>
-                </ul>
+            <div class="card shadow-sm border-0">
+                <nav class="list-group list-group-flush">
+                    <a asp-controller="" asp-action=""
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        LinkUp (Home)
+                    </a>
+                    <a asp-controller="" asp-action=""
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        Amigos
+                    </a>
+                    <a asp-controller="FriendShipRequest" asp-action="Index"
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        Solicitudes de amistad
+                    </a>
+                    <a asp-controller="Battleship" asp-action="Index"
+                       class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
+                        Battleship
+                    </a>
+                    <div class="list-group-item bg-light">
+                        <div class="h6 text-muted mb-1">Following</div>
+                        <div class="h5 mb-0 fw-bold">6758</div>
+                    </div>
+                </nav>
             </div>
         </div>
+
 
         <!-- Main content -->
         <div class="col-md-6 gedf-main">

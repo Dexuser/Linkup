@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using LinkUp.Core.Application.Dtos.Comment;
-using LinkUp.Core.Application.Viewmodels.User;
+using LinkUp.Core.Application.ViewModels.User;
 
-namespace LinkUp.Core.Application.Viewmodels.Comment;
+namespace LinkUp.Core.Application.ViewModels.Comment;
 
 public class CommentCreateViewModel
 {

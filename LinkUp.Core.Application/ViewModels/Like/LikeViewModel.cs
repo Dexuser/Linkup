@@ -1,6 +1,6 @@
-using LinkUp.Core.Application.Viewmodels.Post;
+using LinkUp.Core.Application.ViewModels.Post;
 
-namespace LinkUp.Core.Application.Viewmodels.Like;
+namespace LinkUp.Core.Application.ViewModels.Like;
 
 public class LikeViewModel
 {
