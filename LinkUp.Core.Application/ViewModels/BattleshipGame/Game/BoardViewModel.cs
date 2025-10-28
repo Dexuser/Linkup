@@ -9,7 +9,6 @@ public class BoardViewModel
     public required int GameId { get; set; }
     public required BoardType Type { get; set; } // Ataque, Posicionamiento
     public required bool IsMyTurn { get; set; }
-    public string StateMessage { get; set; }
     
     // Matriz de celdas
     public List<List<CellViewModel>> Cells { get; set; } = new List<List<CellViewModel>>();

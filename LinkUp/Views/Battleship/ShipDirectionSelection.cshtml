@@ -54,9 +54,9 @@
                         </select>
                     </div>
                     <div class="card-footer text-end">
-                        <a asp-controller="Battleship" asp-action="" class="btn btn-danger">Cancelar</a>
+                        <a asp-controller="Battleship" asp-action="ReturnToShipSelection" asp-route-gameId="@Model.GameId" asp-route-shipType="@((int)Model.Type)" class="btn btn-danger">Volver hacia atras</a>
                         <button type="submit" class="btn btn-primary">
-                            Enviar selección
+                            Posicionar
                         </button>
                     </div>
                 </form>

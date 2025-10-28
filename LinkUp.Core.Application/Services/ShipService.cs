@@ -13,12 +13,16 @@ public class ShipService : GenericServices<Ship, ShipDto>, IShipService
 {
     private readonly IShipRepository _shipRepository;
     private readonly IShipPositionService _shipPositionService;
+    private readonly IBattleshipGameService _battleshipGameService;
+    private readonly IMapper _mapper;
 
-    public ShipService(IShipRepository repository, IMapper mapper, IShipPositionService shipPositionService) : base(
+    public ShipService(IShipRepository repository, IMapper mapper, IShipPositionService shipPositionService, IBattleshipGameService battleshipGameService) : base(
         repository, mapper)
     {
         _shipRepository = repository;
+        _mapper = mapper;
         _shipPositionService = shipPositionService;
+        _battleshipGameService = battleshipGameService;
     }
 
     public override async Task<Result<ShipDto>> AddAsync(ShipDto dtoModel)
@@ -66,7 +70,10 @@ public class ShipService : GenericServices<Ship, ShipDto>, IShipService
 
             if (collision)
             {
-                return Result<ShipDto>.Fail("El barco choca con otro barco ya posicionado");
+                return Result<ShipDto>.Fail(
+                    "Debe cambiar la celda seleccionada o la dirección," +
+                    " ya que con la combinación actual el barco quedaría " +
+                    "posicionado encima de otro barco");
             }
 
             // 4. Si pasa todas las validaciones, agregar el barco
@@ -75,17 +82,18 @@ public class ShipService : GenericServices<Ship, ShipDto>, IShipService
             {
                 return Result<ShipDto>.Fail(createResult.GeneralError!);
             }
+            await _battleshipGameService.UpdateLastMove(dtoModel.GameId);
 
             // 5. Crear ShipPositions
             List<ShipPositionDto> shipPositions = new List<ShipPositionDto>();
-            foreach (var Cell in cells)
+            foreach (var cell in cells)
             {
                 shipPositions.Add(new ShipPositionDto()
                 {
                     Id = 0,
                     ShipId = createResult.Value!.Id,
-                    X = Cell[0],
-                    Y = Cell[1],
+                    X = cell[0],
+                    Y = cell[1],
                     IsHit = false
                 });
             }
@@ -97,6 +105,13 @@ public class ShipService : GenericServices<Ship, ShipDto>, IShipService
                 return Result<ShipDto>.Fail(createShipPositionResult.GeneralError!);
             }
 
+            // Si ya los jugadores pusieron todos sus barcos, comenzar la fase de ataque
+            int gameShipCount = _shipRepository.GetAllQueryable().Count(s => s.GameId == dtoModel.GameId);
+            if (gameShipCount == 10)
+            {
+                await _battleshipGameService.SetStatus(createResult.Value!.GameId, GameStatus.InProgress);
+            }
+            
             var returnShipDto = createResult!.Value;
             returnShipDto.Positions = createShipPositionResult.Value!;
 
@@ -112,25 +127,43 @@ public class ShipService : GenericServices<Ship, ShipDto>, IShipService
     {
         try
         {
-            var requiredShips = new List<ShipType>
+            // Cuántos barcos de cada tipo requiere el juego
+            var requiredShips = new Dictionary<ShipType, int>
             {
-                ShipType.PatrolBoat,
-                ShipType.Destroyer,
-                ShipType.Destroyer,
-                ShipType.Battleship,
-                ShipType.Carrier
+                { ShipType.Carrier, 1 },
+                { ShipType.Battleship, 1 },
+                { ShipType.Destroyer, 2 },
+                { ShipType.PatrolBoat, 1 }
             };
 
+            // Obtener todos los barcos colocados por el jugador en este juego
             var placedShips = await _shipRepository
                 .GetAllQueryable()
                 .Where(s => s.GameId == gameId && s.PlayerId == userId)
                 .Select(s => s.Type)
                 .ToListAsync();
 
-            // Filtro manual para evitar el problema del valor duplicado
-            var missingShips = requiredShips
-                .Where(required => !placedShips.Any(placed => placed == required))
-                .ToList();
+            // Contar cuántos barcos de cada tipo ya están colocados
+            var placedCounts = placedShips
+                .GroupBy(s => s)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // Crear la lista de barcos faltantes (repetidos según la cantidad que falte)
+            var missingShips = new List<ShipType>();
+
+            foreach (var kvp in requiredShips)
+            {
+                var type = kvp.Key;
+                var requiredCount = kvp.Value;
+                var placedCount = placedCounts.GetValueOrDefault(type, 0);
+                var remaining = requiredCount - placedCount;
+
+                // Agregar el tipo N veces, donde N = remaining
+                for (int i = 0; i < remaining; i++)
+                {
+                    missingShips.Add(type);
+                }
+            }
 
             return Result<List<ShipType>>.Ok(missingShips);
         }
@@ -139,4 +172,40 @@ public class ShipService : GenericServices<Ship, ShipDto>, IShipService
             return Result<List<ShipType>>.Fail(e.Message);
         }
     }
+    
+    public async Task<Result> CheckIfShipSunk(int shipId)
+    {
+        var ship = await _shipRepository.GetAllQueryable()
+            .Include(s => s.Positions)
+            .FirstOrDefaultAsync(s => s.Id == shipId);
+
+        if (ship == null)
+        {
+            return Result<ShipDto>.Fail("No se encontro un barco con ese ID");
+        }
+
+        // Verificar si TODAS las posiciones del barco han sido impactadas
+        var allPositionsHit = ship.Positions.All(p => p.IsHit);
+
+        if (allPositionsHit)
+        {
+            var shipDto = _mapper.Map<ShipDto>(ship);
+            
+            shipDto.IsSunk = true;
+            var updateResult = await UpdateAsync(shipDto.Id,shipDto);
+            if (updateResult.IsFailure)
+            {
+                return  Result<ShipDto>.Fail(updateResult.GeneralError!);
+            }
+        
+            var gameEndedResult =  await _battleshipGameService.CheckIfGameEnded(ship.GameId);
+            if (gameEndedResult.IsFailure)
+            {
+                return  Result<ShipDto>.Fail(gameEndedResult.GeneralError!);
+            }
+        }
+        
+        return Result.Ok();
+    }
+
 }

@@ -1,10 +1,37 @@
+@using System.Security.Claims
+@using Microsoft.CodeAnalysis.CSharp.Syntax
 @model BoardViewModel 
 
 @{
     ViewBag.Title = "Elige la posicion de tu barco";
     Layout = "_Layout";
+    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
 }
 
+@{
+    if (ViewBag.Message != null)
+    {
+        @if (ViewBag.Message is string)
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <p class="text-center">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                <br/>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                @foreach (var line in ViewBag.Message)
+                {
+                    <p class="text-center">@line</p>
+                }
+                <br/>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    }
+}
 
 <div class="battleship-board">
     <!-- Encabezado -->
@@ -39,7 +66,7 @@
                            asp-route-gameId="@Model.GameId"
                            asp-route-x="@celda.X"
                            asp-route-y="@celda.Y"
-                           asp-route-selectedShip="@((int)Model.SelectedShip!)"
+                           asp-route-selectedShip="@((int?)(Model?.SelectedShip ?? 0))"
                            class="btn @celda.CssClass cell-link">
                         </a>
                     }
@@ -52,15 +79,33 @@
             }
         </div>
     }
-</div>
 
-<style>
-    /* ===== CONTENEDOR PRINCIPAL ===== */
-    .battleship-container {
-        padding: 20px;
-        background-color: #f8f9fa;
+    @if (Model.Type == BoardType.Preview)
+    {
+        <a class="btn btn-danger" asp-controller="Battleship" asp-action="Index">Volver atras</a>
     }
-
+    @if (Model.Type == BoardType.Attack)
+    {
+        <a class="btn btn-warning" asp-controller="Battleship" asp-action="Index">Volver atras</a>
+        <a class="btn btn-success" asp-controller="Battleship" asp-route-gameId="@Model.GameId"
+           asp-route-userId="@userId" asp-action="RedirectToAttackBoard">Refrescar </a>
+        <a class="btn btn-primary" asp-controller="Battleship" asp-route-gameId="@Model.GameId"
+           asp-route-userId="@userId" asp-action="RedirectToShipsPreviewBoard">Ver mi tablero </a>
+        <a class="btn btn-danger" asp-controller="Battleship" asp-route-gameId="@Model.GameId"
+           asp-route-userId="@userId" asp-route-redirectToHome="@false" asp-action="GiveUpTheGame">Rendirse</a>
+    }
+    @if (Model.Type == BoardType.Results)
+    {
+        <a class="btn btn-warning" asp-controller="Battleship" asp-action="Index">Volver atras</a>
+        <a class="btn btn-primary" asp-controller="Battleship" asp-route-gameId="@Model.GameId"
+           asp-route-userId="@userId" asp-action="RedirectToShipsPreviewBoard">Ver mi tablero </a>       
+        <a class="btn btn-danger" asp-controller="Battleship" asp-route-gameId="@Model.GameId"
+           asp-route-userId="@userId" asp-route-showOpponentBoard="true" asp-action="RedirectToAttackPreviewBoard">Ver
+            tablero contrincante</a>
+    }
+    
+</div>
+<style>
     /* ===== TABLERO ===== */
     .battleship-board {
         display: inline-block;
@@ -106,12 +151,11 @@
         border: 1px solid #6c757d;
         border-radius: 3px;
         padding: 0;
-        font-size: 1rem;
     }
 
     .cell-link:hover {
         border-color: #007bff;
-        background-color: #f8f9fa;
+        opacity: 0.8;
     }
 
     /* Celdas deshabilitadas */
@@ -124,91 +168,44 @@
         border: 1px solid #ced4da;
         border-radius: 3px;
         padding: 0;
-        font-size: 1rem;
         cursor: not-allowed;
     }
 
     /* ===== ESTADOS DE LAS CELDAS ===== */
 
-    /* Celda vacía (sin atacar) */
-    .cell-empty {
-        background-color: #cfe2ff;
-        border-color: #6ea8fe;
-        color: #052c65;
-    }
-
-    /* Agua (ataque fallido) */
+    /* Agua - No atacada */
     .cell-water {
-        background-color: #a3d9ff;
-        border-color: #6ec6ff;
-        color: #0069c0;
+        background-color: #4dabf7;  /* Azul más vibrante */
+        border-color: #339af0;
     }
 
-    /* Impacto (ataque acertado) */
+    /* Impacto - Ataque acertado */
     .cell-hit {
-        background-color: #f5c6cb;
-        border-color: #e6858f;
-        color: #721c24;
+        background-color: #ff6b6b;  /* Rojo más vibrante */
+        border-color: #fa5252;
     }
 
     /* Barco posicionado */
     .cell-ship {
-        background-color: #6c757d;
-        border-color: #495057;
-        color: white;
+        background-color: #495057;  /* Gris oscuro */
+        border-color: #343a40;
     }
 
-    /* Barco hundido */
-    .cell-sunk {
-        background-color: #dc3545;
-        border-color: #a71e2a;
-        color: white;
-    }
-
-    /* ===== ESTADO DEL JUEGO ===== */
-    .game-status {
-        border-radius: 5px;
-        font-weight: bold;
-        text-align: center;
-        margin: 15px auto;
-        max-width: 600px;
-    }
-
-    /* ===== LEYENDA ===== */
-    .legend {
-        margin-top: 15px;
-        padding: 10px;
-        background-color: #e9ecef;
-        border-radius: 5px;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        margin: 5px 0;
-    }
-
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        border: 1px solid #6c757d;
-        border-radius: 3px;
+    /* Fallo - Ataque fallido */
+    .cell-miss {
+        background-color: #51cf66;  /* Verde */
+        border-color: #40c057;
     }
 
     /* ===== RESPONSIVE ===== */
     @@media (max-width: 768px) {
-    .board-cell {
-        width: 30px;
-        height: 30px;
-    }
-
-    .cell-link, .cell-disabled {
-        font-size: 0.8rem;
-    }
-
-    .coordinate-cell {
-        font-size: 0.7rem;
-    }
+        .board-cell {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .coordinate-cell {
+            font-size: 0.7rem;
+        }
     }
 </style>

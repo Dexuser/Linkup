@@ -8,4 +8,5 @@ namespace LinkUp.Core.Application.Interfaces;
 public interface IShipService : IGenericService<ShipDto>
 {
     Task<Result<List<ShipType>>> GetMissingShips(string userId, int gameId);
+    Task<Result> CheckIfShipSunk(int shipId);
 }

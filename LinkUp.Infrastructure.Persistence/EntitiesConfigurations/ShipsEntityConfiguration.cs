@@ -53,9 +53,6 @@ public class ShipsEntityConfiguration : IEntityTypeConfiguration<Ship>
             .HasForeignKey(sp => sp.ShipId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Índices compuestos para validaciones
-        builder.HasIndex(s => new { s.GameId, s.PlayerId, s.Type })
-            .IsUnique(); // Un jugador no puede tener dos barcos del mismo tipo
 
         builder.HasIndex(s => new { s.GameId, s.PlayerId });
         builder.HasIndex(s => s.IsSunk);

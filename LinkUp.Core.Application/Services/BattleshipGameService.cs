@@ -102,4 +102,87 @@ public class BattleshipGameService : GenericServices<BattleshipGame, BattleshipG
             return Result<List<UserDto>>.Fail(e.Message);
         }
     }
+
+    public async Task<Result> SetStatus(int gameId, GameStatus status)
+    {
+        if (await _battleshipGameRepository.SetStatus(gameId, status))
+        {
+            return Result.Ok();
+        }
+        return Result.Fail("No se encontro esta partida");
+    }
+
+    public async Task<Result> ChangeTurn(int gameId)
+    {
+        if (await _battleshipGameRepository.ChangeTurn(gameId))
+        {
+         return Result.Ok();   
+        }
+        return Result.Fail("No se encontro esta partida");
+    }
+
+    
+    public async Task<Result<bool>> CheckIfGameEnded(int gameId)
+    {
+        var gameResult = await GetByIdAsync(gameId);
+        if (gameResult.IsFailure)
+            return Result<bool>.Fail(gameResult.GeneralError!);
+
+        var game = gameResult.Value!;
+    
+        // Si ya terminó, retornar true
+        if (game.Status == GameStatus.Finished)
+            return Result<bool>.Ok(true);
+
+        var player1Ships = game.Ships.Where(s => s.PlayerId == game.Player1Id);
+        var player2Ships = game.Ships.Where(s => s.PlayerId == game.Player2Id);
+
+        // Verificar si algún jugador perdió todos sus barcos
+        var player1Lost = player1Ships.All(s => s.IsSunk);
+        var player2Lost = player2Ships.All(s => s.IsSunk);
+
+        if (player1Lost || player2Lost)
+        {
+            game.Status = GameStatus.Finished;
+            game.WinnerId = player1Lost ? game.Player2Id : game.Player1Id;
+            game.EndDate = DateTime.Now;
+        
+            await UpdateAsync(gameId,game);  // Guardar cambios
+            return Result<bool>.Ok(true);
+        }
+
+        return Result<bool>.Ok(false);
+    }
+
+    public async Task<Result> UpdateLastMove(int gameId)
+    {
+        try
+        {
+            await _battleshipGameRepository.UpdateLastMove(gameId);
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
+
+    public async Task<Result> ThisUserGiveUp(int gameId, string userId)
+    {
+        var gameResult = await GetByIdAsync(gameId);
+        if (gameResult.IsFailure)
+        {
+            return Result.Fail(gameResult.GeneralError!);
+        }
+        var game = gameResult.Value!;
+        game.WinnerId = game.Player1Id ==  userId ? game.Player2Id : game.Player1Id;
+        game.EndDate = DateTime.Now;
+        game.Status = GameStatus.Finished;
+        var updateResult = await UpdateAsync(gameId, game);
+        if (updateResult.IsFailure)
+        {
+            return Result.Fail(updateResult.GeneralError!);
+        }
+        return Result.Ok();
+    }
 }

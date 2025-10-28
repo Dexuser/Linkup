@@ -14,7 +14,7 @@ public class CellViewModel
         CellStatus.Empty => "cell-water", 
         CellStatus.Impact => "cell-hit",
         CellStatus.Ship => "cell-ship",
-        CellStatus.SunkShip => "cell-sunk",
+        CellStatus.Miss => "cell-miss",
         _ => "cell-empty"
     };
     public string Text { get; set; } // Texto a mostrar

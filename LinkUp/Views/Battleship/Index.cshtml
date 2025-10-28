@@ -90,8 +90,9 @@
 
                                     <a class="btn btn-sm btn-outline-danger" asp-controller="Battleship"
                                        asp-action="GiveUpTheGame"
-                                       asp-route-FriendShipRequestId="@item.Id"
-                                       asp-route-accepted="false"
+                                       asp-route-gameId="@item.Id"
+                                       asp-route-userId="@currentUserId"
+                                       asp-route-redirectToHome="true"
                                        >
                                        Finalizar 
                                     </a>
@@ -132,13 +133,12 @@
 
                                 <td>
 
-                                    <a class="btn btn-sm btn-outline-danger" asp-controller="Battleship"
-                                       asp-action="Results"
-                                       asp-route-id="@item.Id"
-                                       >
+                                    <a class="btn btn-outline-primary" asp-controller="Battleship"
+                                       asp-route-gameId="@item.Id" asp-route-userId="@currentUserId"
+                                       asp-route-showOpponentBoard="false" asp-action="RedirectToAttackPreviewBoard">
                                         Ver resultados
                                     </a>
-                                </td>
+                               </td>
                             </tr>
                         }
                         </tbody>
