@@ -69,6 +69,21 @@ public class BattleshipGameService : GenericServices<BattleshipGame, BattleshipG
             return Result<List<BattleshipGameDto>>.Fail(ex.Message);
         }
     }
+
+    // Teniendo en cuenta que los objetos son tipos de referencia, los DTO que pasen por este metodo
+    // seran modificados. Por eso no vuelvo a pedir un listasdo a la DB
+    private async Task CheckForAbandonedGames(List<BattleshipGameDto> gamess)
+    {
+        
+        foreach (var game in gamess)
+        {
+            if (DateTime.Now - game.LastMoveDate <= TimeSpan.FromHours(48)) continue;
+            game.EndDate = DateTime.Now;
+            game.WinnerId = game.CurrentTurnPlayerId == game.Player1Id ? game.Player2Id : game.Player1Id;
+            game.Status = GameStatus.Finished;
+            await UpdateAsync(game.Id, game);
+        }
+    }
     
     public async Task<Result<List<UserDto>>> GetAllTheUsersAvailableForAGame(string userId, string? userNameFilter = null)
     {
@@ -184,5 +199,27 @@ public class BattleshipGameService : GenericServices<BattleshipGame, BattleshipG
             return Result.Fail(updateResult.GeneralError!);
         }
         return Result.Ok();
+    }
+    
+    public async Task<Result<BattleshipGameSummaryDto>> GetSummaryOfThisUser(string userId)
+    {
+        var query = _battleshipGameRepository.GetAllQueryable();
+    
+        var summary = new BattleshipGameSummaryDto
+        {
+            GamesCount = await query
+                .CountAsync(g => g.Player1Id == userId || g.Player2Id == userId),
+            
+            GamesWinCount = await query
+                .CountAsync(g => g.WinnerId == userId),
+            
+            GamesLoseCount = await query
+                .CountAsync(g => (g.Player1Id == userId || g.Player2Id == userId) && 
+                                 g.WinnerId != null && 
+                                 g.WinnerId != userId &&
+                                 g.Status == GameStatus.Finished)
+        };
+
+        return Result<BattleshipGameSummaryDto>.Ok(summary);
     }
 }

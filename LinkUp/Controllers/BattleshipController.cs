@@ -12,11 +12,14 @@ using LinkUp.Core.Application.ViewModels.User;
 using LinkUp.Core.Domain.Entities;
 using LinkUp.Core.Domain.Entities.Common;
 using LinkUp.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace LinkUp.Controllers;
 
+
+[Authorize]
 public class BattleshipController : Controller
 {
     private readonly IBattleshipGameService _battleshipGameService;
@@ -35,8 +38,21 @@ public class BattleshipController : Controller
     // GET
     public async Task<IActionResult> Index()
     {
-        var viewmodel = new BattleshipGameHomeIndex();
+        
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+        
+        var summary = await _battleshipGameService.GetSummaryOfThisUser(userId);
+        var sumaryViewModel = new BattleshipGameSummaryViewModel()
+        {
+            GamesCount = summary.Value!.GamesCount,
+            GamesWinCount = summary.Value!.GamesWinCount,
+            GamesLoseCount = summary.Value!.GamesLoseCount,
+        };
+        
+        var viewmodel = new BattleshipGameHomeIndex
+        {
+            Summary = sumaryViewModel,
+        };
         var requestResult = await _battleshipGameService.GetAllBattleshipGamesOfUser(userId);
 
         if (requestResult.IsFailure)

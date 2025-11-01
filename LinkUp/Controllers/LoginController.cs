@@ -175,4 +175,46 @@ public class LoginController : Controller
 
         return RedirectToRoute(new { controller = "Login", action = "Index" });
     }
+
+    public async Task<IActionResult> EditUser(string userid)
+    {
+        var user = await _accountServiceForWebApp.GetUserById(userid);
+        var userViewModel =  _mapper.Map<EditUserViewModel>(user.Value!);
+        return View(userViewModel);
+    }
+    
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> EditUser(EditUserViewModel userViewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(userViewModel);
+        }
+        
+        string origin = Request.Headers.Origin.FirstOrDefault() ?? "";
+        var userFromDb =  await _accountServiceForWebApp.GetUserById(userViewModel.Id);
+        var saveDto = _mapper.Map<UserSaveDto>(userFromDb.Value!);
+        saveDto.FirstName = userViewModel.FirstName;
+        saveDto.LastName = userViewModel.LastName;
+        saveDto.Phone = userViewModel.Phone;
+        
+        if (userViewModel.Password != null)
+        {
+            saveDto.Password = userViewModel.Password;
+        }
+        
+        if (userViewModel.ProfileImageFile != null)
+        {
+            saveDto.PhotoPath = FileManager.Upload(userViewModel.ProfileImageFile, userViewModel.Id, "users", true, userFromDb.Value!.PhotoPath);
+        }
+        
+        var result = await _accountServiceForWebApp.EditUser(saveDto, origin, true);
+        if (result.IsFailure)
+        {
+            return View("EditUser", userViewModel);
+        }
+
+        return  RedirectToRoute(new { controller = "Home", action = "Index" });
+    }
 }

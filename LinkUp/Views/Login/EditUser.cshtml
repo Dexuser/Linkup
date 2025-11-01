@@ -1,0 +1,93 @@
+﻿@model EditUserViewModel 
+@{
+    ViewData["Title"] = "Actualizar usuario";
+    Layout = "_Layout";
+}
+
+
+<div class="row">
+    <div class="d-flex justify-content-center align-items-center min-vh-100">
+        <div class="col-md-5">
+            @{
+                if (ViewBag.Message != null)
+                {
+                    @if (ViewBag.Message is string)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <p class="text-center">@Html.Raw(ViewBag.Message.Replace("\n", "<br />"))</p>
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            @foreach (var line in ViewBag.Message)
+                            {
+                                <p class="text-center">@line</p>
+                            }
+                            <br/>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                }
+            }
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-light">
+                    <div class="text-center">
+                        <h3 class="card-title">Actualiza estos campos</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Login" asp-action="EditUser" method="post" enctype="multipart/form-data">
+                        <input type="hidden" value="@Model.Id" asp-for="Id"/>
+                        <div class="mt-2">
+                            <label class="form-label" asp-for="FirstName">Nombre:</label>
+                            <input class="form-control" asp-for="FirstName"/>
+                            <span class="text-danger" asp-validation-for="FirstName"></span>
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="form-label" asp-for="LastName">Apellidos:</label>
+                            <input class="form-control" asp-for="LastName"/>
+                            <span class="text-danger" asp-validation-for="LastName"></span>
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="form-label" asp-for="Password">Contraseña:</label>
+                            <input class="form-control" asp-for="Password"/>
+                            <span class="text-danger" asp-validation-for="Password"></span>
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="form-label" asp-for="ConfirmPassword">Confirmar contraseña:</label>
+                            <input class="form-control" asp-for="ConfirmPassword"/>
+                            <span class="text-danger" asp-validation-for="ConfirmPassword"></span>
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="form-label" asp-for="Phone">Numero de teléfono:</label>
+                            <input class="form-control" asp-for="Phone"/>
+                            <span class="text-danger" asp-validation-for="Phone"></span>
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="form-label" asp-for="ProfileImageFile">Foto de perfil:</label>
+                            <input class="form-control" asp-for="ProfileImageFile"/>
+                            <span class="text-danger" asp-validation-for="ProfileImageFile"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-4">
+                            <button class="btn btn-success me-2" type="submit">Actualizar datos</button>
+                            <a class="btn btn-danger" asp-controller="Home" asp-action="Index">Volver al home</a>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center mt-1">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

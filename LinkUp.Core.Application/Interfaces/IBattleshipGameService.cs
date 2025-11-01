@@ -14,4 +14,5 @@ public interface IBattleshipGameService : IGenericService<BattleshipGameDto>
     Task<Result<bool>>CheckIfGameEnded(int gameId);
     Task<Result> UpdateLastMove(int gameId);
     Task<Result> ThisUserGiveUp(int gameId, string userId);
+    Task<Result<BattleshipGameSummaryDto>> GetSummaryOfThisUser(string userId);
 }

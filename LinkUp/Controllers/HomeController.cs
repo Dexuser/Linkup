@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using AutoMapper;
 using LinkUp.Core.Application.Dtos.Comment;
 using LinkUp.Core.Application.Dtos.Like;
@@ -7,6 +8,7 @@ using LinkUp.Core.Application.Interfaces;
 using LinkUp.Core.Application.ViewModels.Comment;
 using LinkUp.Core.Application.ViewModels.HomeIndex;
 using LinkUp.Core.Application.ViewModels.Post;
+using LinkUp.Core.Application.ViewModels.User;
 using LinkUp.Helpers;
 using LinkUp.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +21,7 @@ namespace LinkUp.Controllers;
 [Authorize]
 public class HomeController : Controller
 {
+    private readonly IAccountServiceForWebApp _accountServiceForWebApp;
     private readonly IPostService _postService;
     private readonly ICommentService _commentService;
     private readonly ILikeService _likeService;
@@ -27,7 +30,7 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     
 
-    public HomeController(ILogger<HomeController> logger, IPostService postService, UserManager<AppUser> userManager, IMapper mapper, ICommentService commentService, ILikeService likeService)
+    public HomeController(ILogger<HomeController> logger, IPostService postService, UserManager<AppUser> userManager, IMapper mapper, ICommentService commentService, ILikeService likeService, IAccountServiceForWebApp accountServiceForWebApp)
     {
         _logger = logger;
         _postService = postService;
@@ -35,6 +38,7 @@ public class HomeController : Controller
         _mapper = mapper;
         _commentService = commentService;
         _likeService = likeService;
+        _accountServiceForWebApp = accountServiceForWebApp;
     }
 
     public async Task<IActionResult> Index()
@@ -178,47 +182,7 @@ public class HomeController : Controller
         return RedirectToRoute(new {controller ="Home" , action = "Index"});
     }
 
-    private async Task<HomeIndexViewModel> CreateHomeIndexViewModel()
-    {
-        var viewModel = new HomeIndexViewModel()
-        {
-            Posts = new List<PostViewModel>(),
-            PostCreateViewModel = new PostCreateViewModel()
-            {
-                Text = "",
-                ImageFile = null,
-                VideoUrl = null
-            },
-            CommentCreateViewModel = new CommentCreateViewModel()
-            {
-                Text = "",
-                AuthorId = "",
-                PostId = 0,
-                ParentCommentId = null
-            },
-            CommentEditViewModel = new CommentEditViewModel()
-            {
-                Id = 0,
-                Text = "",
-            },
-            PostEditViewModel = new  PostEditViewModel()
-            {
-                Id = 0,
-                Text = "",
-                ImageFile = null,
-                VideoUrl = ""
-            }
-        };
-        
-        var currentUser = await _userManager.GetUserAsync(User);
-        var userResult = await _postService.GetAllPostsOfThisUser(currentUser!.Id);
-        if (userResult.IsSuccess)
-        {
-            viewModel.Posts = _mapper.Map<List<PostViewModel>>(userResult.Value);
-        }
-        
-        return viewModel;
-    }
+
     
     [HttpPost]
     public async Task<IActionResult> DeletePost(int postId)
@@ -338,5 +302,51 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+    
+    private async Task<HomeIndexViewModel> CreateHomeIndexViewModel()
+    {
+        var userid = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+        var user = await _accountServiceForWebApp.GetUserById(userid);
+        
+        var viewModel = new HomeIndexViewModel
+        {
+            Posts = new List<PostViewModel>(),
+            PostCreateViewModel = new PostCreateViewModel()
+            {
+                Text = "",
+                ImageFile = null,
+                VideoUrl = null
+            },
+            CommentCreateViewModel = new CommentCreateViewModel()
+            {
+                Text = "",
+                AuthorId = "",
+                PostId = 0,
+                ParentCommentId = null
+            },
+            CommentEditViewModel = new CommentEditViewModel()
+            {
+                Id = 0,
+                Text = "",
+            },
+            PostEditViewModel = new PostEditViewModel()
+            {
+                Id = 0,
+                Text = "",
+                ImageFile = null,
+                VideoUrl = ""
+            },
+            CurrentUser = _mapper.Map<UserViewModel>(user.Value!) 
+        };
+        
+        var currentUser = await _userManager.GetUserAsync(User);
+        var userResult = await _postService.GetAllPostsOfThisUser(currentUser!.Id);
+        if (userResult.IsSuccess)
+        {
+            viewModel.Posts = _mapper.Map<List<PostViewModel>>(userResult.Value);
+        }
+        
+        return viewModel;
     }
 }

@@ -16,6 +16,8 @@ public class UserMappingProfile : Profile
 
         CreateMap<LoginViewModel, LoginDto>().ReverseMap();
         CreateMap<UserDto, UserViewModel>().ReverseMap();
+        CreateMap<UserDto, EditUserViewModel>().ReverseMap();
+        CreateMap<EditUserViewModel, UserSaveDto>().ReverseMap();
         CreateMap<UserWithCommonFriendCountDto, UserWithCommonFriendCountViewModel>().ReverseMap();
 
     }

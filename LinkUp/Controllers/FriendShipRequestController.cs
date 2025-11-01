@@ -6,10 +6,12 @@ using LinkUp.Core.Application.ViewModels.FriendShipRequest;
 using LinkUp.Core.Application.ViewModels.User;
 using LinkUp.Core.Domain.Entities.Common;
 using LinkUp.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LinkUp.Controllers;
 
+[Authorize]
 public class FriendShipRequestController : Controller
 {
     private readonly IFriendShipRequestService _friendShipRequestService;
@@ -28,9 +30,14 @@ public class FriendShipRequestController : Controller
     // GET
     public async Task<IActionResult> Index()
     {
-        var viewmodel = new FriendShipRequestHomeIndex();
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+        var user = await _accountServiceForWebApp.GetUserById(userId);
         var requestResult = await _friendShipRequestService.GetAllTheRequestsOfThisUser(userId);
+        var viewmodel = new FriendShipRequestHomeIndex
+        {
+            CurrentUser = _mapper.Map<UserViewModel>(user.Value!)
+        };
+
         
         if (requestResult.IsFailure)
         {

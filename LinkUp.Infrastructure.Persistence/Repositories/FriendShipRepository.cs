@@ -21,8 +21,19 @@ public class FriendShipRepository : GenericRepository<FriendShip>, IFriendShipRe
 
         return friendsIds;
     }
-    
 
-
-    
+    public async Task DeleteFriendShip(string userId1, string userId2)
+    {
+        var frienship = await Context.Set<FriendShip>()
+            .FirstOrDefaultAsync(f =>
+                f.UserId1 == userId1 && f.UserId2 == userId2
+                ||
+                f.UserId1 == userId2 && f.UserId2 == userId1);
+        
+        if (frienship != null)
+        {
+            Context.Remove(frienship);
+            await Context.SaveChangesAsync();
+        }
+    }
 }

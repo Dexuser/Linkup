@@ -25,10 +25,6 @@
                        class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
                         Battleship
                     </a>
-                    <div class="list-group-item bg-light">
-                        <div class="h6 text-muted mb-1">Following</div>
-                        <div class="h5 mb-0 fw-bold">6758</div>
-                    </div>
                 </nav>
             </div>
         </div>
@@ -138,17 +134,35 @@
             </div>
         </div>
 
-        <!-- Lateral derecho (opcional) -->
+        <!-- Lateral derecho -->
         <div class="col-md-3">
-            <div class="card gedf-card mb-3">
+            <div class="card gedf-card mb-3 shadow-sm border-0">
                 <div class="card-body">
-                    <h5 class="card-title">Card title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                    <p class="card-text">Some quick example text...</p>
-                    <a href="#" class="card-link">Card link</a>
-                    <a href="#" class="card-link">Another link</a>
+                    <div class="d-flex align-items-center">
+                        <img class="rounded-circle me-2" width="45" height="45"
+                             src="@Model.CurrentUser.PhotoPath" alt="Imagen de perfil">
+                        <div>
+                            <div class="fw-bold h6 m-0">@($"{Model.CurrentUser.FirstName} {Model.CurrentUser.LastName}")</div>
+                            <div class="text-muted small">@Model.CurrentUser.UserName</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-light text-center">
+                    <nav class="list-group list-group-flush">
+                        <a asp-controller="Login" asp-action="EditUser" asp-route-userid="@Model.CurrentUser.Id" 
+                           class="list-group-item list-group-item-action fw-semibold no-link-style">
+                            Mi perfil
+                        </a>
+                        <a asp-controller="Login" asp-action="Logout"
+                           class="list-group-item list-group-item-action text-danger fw-semibold no-link-style">
+                            Cerrar sesión
+                        </a>
+                    </nav>
                 </div>
             </div>
         </div>
+        
+        
+        
     </div>
 </div>

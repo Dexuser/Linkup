@@ -6,6 +6,7 @@ using LinkUp.Core.Domain.Entities;
 using LinkUp.Core.Domain.Entities.Common;
 using LinkUp.Core.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace LinkUp.Core.Application.Services;
 
@@ -15,7 +16,10 @@ public class FriendShipService : GenericServices<FriendShip, FriendShipDto>, IFr
     private readonly IFriendShipRequestRepository _friendShipRequestRepository;
     private readonly IAccountServiceForWebApp _accountServiceForWebApp;
     private readonly IMapper _mapper;
-    public FriendShipService(IFriendShipRepository repository, IMapper mapper, IAccountServiceForWebApp accountServiceForWebApp, IFriendShipRequestRepository friendShipRequestRepository) : base(repository, mapper)
+
+    public FriendShipService(IFriendShipRepository repository, IMapper mapper,
+        IAccountServiceForWebApp accountServiceForWebApp,
+        IFriendShipRequestRepository friendShipRequestRepository) : base(repository, mapper)
     {
         _friendShipRepository = repository;
         _mapper = mapper;
@@ -58,7 +62,7 @@ public class FriendShipService : GenericServices<FriendShip, FriendShipDto>, IFr
         // IDs de usuarios con solicitudes pendientes (solicitadas o recibidas)
         var usersIdWithPendingRequests = await _friendShipRequestRepository.GetAllQueryable()
             .AsNoTracking()
-            .Where(r => r.Status != FriendShipRequestStatus.Rejected)
+            .Where(r => r.Status == FriendShipRequestStatus.Pending)
             .Where(r => r.RequestedByUserId == userId || r.TargetUserId == userId)
             .Select(r => r.RequestedByUserId == userId ? r.TargetUserId : r.RequestedByUserId)
             .ToListAsync();
@@ -77,20 +81,45 @@ public class FriendShipService : GenericServices<FriendShip, FriendShipDto>, IFr
             )
             .ToList();
 
-        // Creamos tareas para calcular amigos en común
-        var tasks = potentialUsers.Select(async u =>
+
+        var potentialUsersWithCount = new List<UserWithCommonFriendCountDto>();
+
+        foreach (var u in potentialUsers)
         {
             var commonCount = await GetCommonFriendsCountAsync(userId, u.Id);
-            return new UserWithCommonFriendCountDto
+            potentialUsersWithCount.Add(new UserWithCommonFriendCountDto
             {
                 User = u,
                 CommonFriendCount = commonCount
-            };
-        });
-
-        var potentialUsersWithCount = (await Task.WhenAll(tasks)).ToList();
-
+            });
+        }
+        
         return Result<List<UserWithCommonFriendCountDto>>.Ok(potentialUsersWithCount);
     }
 
+    public async Task<Result<List<string>>> GetAllTheFriendsIds(string userId)
+    {
+        var friendsIds = await _friendShipRepository.GetAllTheFriendsIds(userId);
+        return Result<List<string>>.Ok(friendsIds);
+    }
+
+    public async Task<Result<List<UserDto>>> GetAllTheFriends(string userId)
+    {
+        var friendsIds = await _friendShipRepository.GetAllTheFriendsIds(userId);
+        var friends = await _accountServiceForWebApp.GetUsersByIds(friendsIds);
+        return Result<List<UserDto>>.Ok(friends.Value!);
+    }
+
+    public async Task<Result> DeleteFrienship(string userId1, string userId2)
+    {
+        try
+        {
+            await _friendShipRepository.DeleteFriendShip(userId1, userId2);
+            return Result.Ok();
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail(ex.Message);
+        }
+    }
 }

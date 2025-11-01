@@ -1,6 +1,6 @@
-@model HomeIndexViewModel
+@model FriendsIndexViewModel
 @{
-    ViewBag.Title = "Home";
+    ViewBag.Title = "Amigos";
     Layout = "_Layout";
     var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
@@ -30,6 +30,39 @@
                     </a>
                 </nav>
             </div>
+            <div class="card mt-4">
+                <div class="card-header fw-bold">
+                    Amigos
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var item in Model.Friends)
+                        {
+                            <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                    
+                                <div class="d-flex align-items-center gap-2">
+                                    <img class="rounded-circle" width="35" height="35" src="@(item.PhotoPath!)" alt="Foto de perfil">
+                                    <div class="d-flex flex-column">
+                                        <div class="fw-bold">@($"{item.FirstName} {item.LastName}")</div>
+                                        <div class="text-muted small">
+                                            <a class="no-link-style" asp-controller="Friends" asp-action="Details" asp-route-userId="@item.Id">
+                                                @item.UserName
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-link text-danger p-0 ms-2" data-bs-toggle="modal"
+                                        data-bs-target="#deleteFriendModal" data-userid="@item.Id">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            
         </div>
 
 
@@ -54,46 +87,6 @@
                 </div>
             }
 
-            <!-- Crear post -->
-            <div class="card gedf-card mb-3">
-                <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts"
-                                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
-                                Crear una publicación
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-body">
-                    <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
-                            <form asp-controller="Home" asp-action="Post" enctype="multipart/form-data">
-                                <div class="mb-2">
-                                    <textarea asp-for="PostCreateViewModel.Text" class="form-control" rows="4"
-                                              placeholder="En que estas pensando?"></textarea>
-                                    <span class="text-danger" asp-validation-for="PostCreateViewModel.Text"></span>
-                                </div>
-                                <div class="mb-2">
-                                    <label asp-for="PostCreateViewModel.ImageFile">Imagen</label>
-                                    <input asp-for="PostCreateViewModel.ImageFile" class="form-control"/>
-                                    <span class="text-danger" asp-validation-for="PostCreateViewModel.ImageFile"></span>
-                                </div>
-                                <div class="mb-2">
-                                    <label asp-for="PostCreateViewModel.VideoUrl">URL del video</label>
-                                    <input asp-for="PostCreateViewModel.VideoUrl" class="form-control"/>
-                                    <span class="text-danger" asp-validation-for="PostCreateViewModel.VideoUrl"></span>
-                                </div>
-                                <div class="mb-2">
-                                    <button class="btn btn-primary" type="submit">Publicar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Posts existentes -->
             @foreach (var post in Model.Posts)
             {
@@ -101,43 +94,24 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
-                                <img class="rounded-circle me-2" width="45" height="45" src="@(post.User!.PhotoPath!)" alt="Imagen de perfil">
+                                <img class="rounded-circle me-2" width="45" height="45" src="@(post.User!.PhotoPath!)"
+                                     alt="Imagen de perfil">
                                 <div>
                                     <div class="h5 m-0">@post.User.FirstName</div>
-                                    <div class="h7 text-muted">@($"{post.User.FirstName} {post.User.LastName}")</div>
-                                </div>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots" style="color: blue;"></i>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="dropdown-item edit-post-btn" href="#"
-                                           data-bs-toggle="modal"
-                                           data-bs-target="#editPostModal"
-                                           data-id="@post.Id"
-                                           data-text="@post.Text"
-                                           data-video="@post.VideoUrl"
-                                        >
-                                            Editar
+                                    <div class="h7 text-muted">
+                                        <a class="no-link-style" asp-controller="Friends" asp-action="Details"
+                                           asp-route-userId="@post.UserId">
+                                            @($"{post.User.FirstName} {post.User.LastName}")
                                         </a>
-                                    </li>
-                                    <li>
-                                    <a class="dropdown-item delete-post-btn" href="#"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#deletePostModal"
-                                       data-id="@post.Id"
-                                    >
-                                        Eliminar 
-                                    </a>
-                                </ul>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card-body">
-                        <div class="text-muted h7 mb-2"><i class="fa fa-clock-o"></i>@post.CreatedAt.ToShortDateString()</div>
+                        <div class="text-muted h7 mb-2"><i class="fa fa-clock-o"></i>@post.CreatedAt.ToShortDateString()
+                        </div>
                         <p class="card-text">@post.Text</p>
 
                         @if (!string.IsNullOrEmpty(post.ImagePath))
@@ -158,15 +132,17 @@
                         {
                             case null:
                                 <text>
-                                    <form asp-controller="Home" asp-action="LikePost" method="post" style="display:inline;">
-                                        <input type="hidden" name="postId" value="@post.Id" />
-                                        <input type="hidden" name="like" value="true" />
+                                    <form asp-controller="Friends" asp-action="LikePost" method="post"
+                                          style="display:inline;">
+                                        <input type="hidden" name="postId" value="@post.Id"/>
+                                        <input type="hidden" name="like" value="true"/>
                                         <button type="submit" class="card-link btn btn-link p-0">Me gusta</button>
                                     </form>
 
-                                    <form asp-controller="Home" asp-action="LikePost" method="post" style="display:inline; margin-left:10px;">
-                                        <input type="hidden" name="postId" value="@post.Id" />
-                                        <input type="hidden" name="like" value="false" />
+                                    <form asp-controller="Friends" asp-action="LikePost" method="post"
+                                          style="display:inline; margin-left:10px;">
+                                        <input type="hidden" name="postId" value="@post.Id"/>
+                                        <input type="hidden" name="like" value="false"/>
                                         <button type="submit" class="card-link btn btn-link p-0">No gusta</button>
                                     </form>
                                 </text>
@@ -176,9 +152,10 @@
                                 <text>
                                     <span class="card-text btn btn-primary text-light disabled">Me gusta</span>
 
-                                    <form asp-controller="Home" asp-action="LikePost" method="post" style="display:inline; margin-left:10px;">
-                                        <input type="hidden" name="postId" value="@post.Id" />
-                                        <input type="hidden" name="like" value="false" />
+                                    <form asp-controller="Friends" asp-action="LikePost" method="post"
+                                          style="display:inline; margin-left:10px;">
+                                        <input type="hidden" name="postId" value="@post.Id"/>
+                                        <input type="hidden" name="like" value="false"/>
                                         <button type="submit" class="card-link btn btn-link p-0">No gusta</button>
                                     </form>
                                 </text>
@@ -186,13 +163,15 @@
 
                             case false:
                                 <text>
-                                    <form asp-controller="Home" asp-action="LikePost" method="post" style="display:inline;">
-                                        <input type="hidden" name="postId" value="@post.Id" />
-                                        <input type="hidden" name="like" value="true" />
+                                    <form asp-controller="Friends" asp-action="LikePost" method="post"
+                                          style="display:inline;">
+                                        <input type="hidden" name="postId" value="@post.Id"/>
+                                        <input type="hidden" name="like" value="true"/>
                                         <button type="submit" class="card-link btn btn-link p-0">Me gusta</button>
                                     </form>
 
-                                    <span class="card-text text-light btn btn-danger disabled" style="margin-left:10px;">No gusta</span>
+                                    <span class="card-text text-light btn btn-danger disabled"
+                                          style="margin-left:10px;">No gusta</span>
                                 </text>
                                 break;
                         }
@@ -203,10 +182,13 @@
                             @foreach (var comment in post.Comments)
                             {
                                 <div class="card mb-3">
-                                    <div class="card-header bg-primary-subtle d-flex justify-content-between align-items-center">
+                                    <div
+                                        class="card-header bg-primary-subtle d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
-                                            <img class="rounded-circle me-2" width="30" height="30" src="@(comment.Author!.PhotoPath)" alt="Imagen de perfil">
-                                            <div class="h7">@($"{comment.Author.FirstName} {comment.Author.LastName}")</div>
+                                            <img class="rounded-circle me-2" width="30" height="30"
+                                                 src="@(comment.Author!.PhotoPath)" alt="Imagen de perfil">
+                                            <div
+                                                class="h7">@($"{comment.Author.FirstName} {comment.Author.LastName}")</div>
                                         </div>
 
                                         @if (comment.AuthorId == currentUserId)
@@ -246,16 +228,20 @@
                                     @foreach (var reply in comment.Replies)
                                     {
                                         <div class="card mb-1 ms-4">
-                                            <div class="card-header bg-secondary-subtle d-flex justify-content-between align-items-center">
+                                            <div
+                                                class="card-header bg-secondary-subtle d-flex justify-content-between align-items-center">
                                                 <div class="d-flex align-items-center">
-                                                    <img class="rounded-circle me-2" width="25" height="25" src="@(reply.Author!.PhotoPath)" alt="Imagen de perfil">
-                                                    <div class="h7">@($"{reply.Author.FirstName} {reply.Author.LastName}")</div>
+                                                    <img class="rounded-circle me-2" width="25" height="25"
+                                                         src="@(reply.Author!.PhotoPath)" alt="Imagen de perfil">
+                                                    <div
+                                                        class="h7">@($"{reply.Author.FirstName} {reply.Author.LastName}")</div>
                                                 </div>
 
                                                 @if (reply.AuthorId == currentUserId)
                                                 {
                                                     <div class="dropdown">
-                                                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <button class="btn dropdown-toggle" type="button"
+                                                                data-bs-toggle="dropdown" aria-expanded="false">
                                                             <i class="bi bi-three-dots" style="color: blue;"></i>
                                                         </button>
                                                         <ul class="dropdown-menu">
@@ -289,10 +275,13 @@
                                     @* Form para responder *@
                                     <div class="card bg-light mt-2">
                                         <div class="container-fluid mt-3">
-                                            <form asp-controller="Home" asp-action="CreateComment" method="post">
-                                                <input type="hidden" asp-for="CommentCreateViewModel.AuthorId" value="@currentUserId"/>
-                                                <input type="hidden" asp-for="CommentCreateViewModel.PostId" value="@post.Id"/>
-                                                <input type="hidden" asp-for="CommentCreateViewModel.ParentCommentId" value="@comment.Id"/>
+                                            <form asp-controller="Friends" asp-action="CreateComment" method="post">
+                                                <input type="hidden" asp-for="CommentCreateViewModel.AuthorId"
+                                                       value="@currentUserId"/>
+                                                <input type="hidden" asp-for="CommentCreateViewModel.PostId"
+                                                       value="@post.Id"/>
+                                                <input type="hidden" asp-for="CommentCreateViewModel.ParentCommentId"
+                                                       value="@comment.Id"/>
 
                                                 <div class="d-flex align-items-start mb-2">
                                                     <textarea asp-for="CommentCreateViewModel.Text"
@@ -302,7 +291,8 @@
                                                               style="resize: none; flex: 1;"></textarea>
                                                     <button class="btn btn-primary" type="submit">Responder</button>
                                                 </div>
-                                                <span class="text-danger" asp-validation-for="CommentCreateViewModel.Text"></span>
+                                                <span class="text-danger"
+                                                      asp-validation-for="CommentCreateViewModel.Text"></span>
                                             </form>
                                         </div>
                                     </div>
@@ -312,8 +302,9 @@
                             @* Form para comentar el post *@
                             <div class="card bg-light mt-2">
                                 <div class="container-fluid mt-3">
-                                    <form asp-controller="Home" asp-action="CreateComment" method="post">
-                                        <input type="hidden" asp-for="CommentCreateViewModel.AuthorId" value="@currentUserId"/>
+                                    <form asp-controller="Friends" asp-action="CreateComment" method="post">
+                                        <input type="hidden" asp-for="CommentCreateViewModel.AuthorId"
+                                               value="@currentUserId"/>
                                         <input type="hidden" asp-for="CommentCreateViewModel.PostId" value="@post.Id"/>
 
                                         <div class="d-flex align-items-start mb-2">
@@ -324,7 +315,8 @@
                                                       style="resize: none; flex: 1;"></textarea>
                                             <button class="btn btn-primary" type="submit">Comentar</button>
                                         </div>
-                                        <span class="text-danger" asp-validation-for="CommentCreateViewModel.Text"></span>
+                                        <span class="text-danger"
+                                              asp-validation-for="CommentCreateViewModel.Text"></span>
                                     </form>
                                 </div>
                             </div>
@@ -333,6 +325,7 @@
                 </div>
             }
         </div>
+
         <!-- Lateral derecho -->
         <div class="col-md-3">
             <div class="card gedf-card mb-3 shadow-sm border-0">
@@ -360,77 +353,9 @@
                 </div>
             </div>
         </div>
-
         
     </div>
-    
 </div>
-
-
-<!-- Modal reutilizable para editar un post -->
-<div class="modal fade" id="editPostModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-controller="Home" asp-action="EditPost" enctype="multipart/form-data" method="post">
-                <input type="hidden" id="modalPostId" asp-for="PostEditViewModel.Id" />
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Publicación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="mb-2">
-                        <label asp-for="PostEditViewModel.Text">Contenido</label>
-                        <textarea id="modalPostText" asp-for="PostEditViewModel.Text" class="form-control" rows="4"></textarea>
-                        <span class="text-danger" asp-validation-for="PostEditViewModel.Text"></span>
-                    </div>
-
-                    <div class="mb-2">
-                        <label asp-for="PostEditViewModel.ImageFile">Imagen</label>
-                        <input id="modalPostImage" asp-for="PostEditViewModel.ImageFile" class="form-control"/>
-                        <span class="text-danger" asp-validation-for="PostEditViewModel.ImageFile"></span>
-                    </div>
-
-                    <div class="mb-2">
-                        <label asp-for="PostEditViewModel.VideoUrl">URL del video</label>
-                        <input id="modalPostVideo" asp-for="PostEditViewModel.VideoUrl" class="form-control"/>
-                        <span class="text-danger" asp-validation-for="PostEditViewModel.VideoUrl"></span>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-<!-- Modal de confirmación para eliminar un post -->
-<div class="modal fade" id="deletePostModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                ¿Estás seguro de que deseas eliminar este post?
-            </div>
-            <div class="modal-footer">
-                <form asp-controller="Home" asp-action="DeletePost" method="post" >
-                    <input type="hidden" id="modalDeletePostId" name="postId" />
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 
 <!-- Modal de confirmación para eliminar un comentario -->
@@ -445,8 +370,8 @@
                 ¿Estás seguro de que deseas eliminar este comentario?
             </div>
             <div class="modal-footer">
-                <form asp-controller="Home" asp-action="DeleteComment" method="post" >
-                    <input type="hidden" id="modalDeleteCommentId" name="commentId" />
+                <form asp-controller="Friends" asp-action="DeleteComment" method="post">
+                    <input type="hidden" id="modalDeleteCommentId" name="commentId"/>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
@@ -461,8 +386,8 @@
 <div class="modal fade" id="editCommentModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-controller="Home" asp-action="EditComment" method="post">
-                <input type="hidden" id="modalCommentId" asp-for="CommentEditViewModel.Id"  />
+            <form asp-controller="Friends" asp-action="EditComment" method="post">
+                <input type="hidden" id="modalCommentId" asp-for="CommentEditViewModel.Id"/>
                 <div class="modal-header">
                     <h5 class="modal-title">Editar Comentario</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -480,67 +405,67 @@
     </div>
 </div>
 
+<!-- Modal de confirmación para eliminar amigo -->
+<div class="modal fade" id="deleteFriendModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar esta amistad?
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Friends" asp-action="DeleteFriend" method="post">
+                    <input type="hidden" id="modalDeleteFriendId" name="friendUserId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- Para obtener el ID y texto que necesita el fomulario del modal de editar post -->
+<!-- Script para pasar el userId al modal -->
 <script>
-document.querySelectorAll(".edit-post-btn").forEach(btn => {
-    btn.addEventListener("click", function(e) {
-        e.preventDefault();
-
-        const id = this.dataset.id;
-        const text = this.dataset.text;
-        const video = this.dataset.video;
-
-        document.getElementById("modalPostId").value = id;
-        document.getElementById("modalPostText").value = text;
-        document.getElementById("modalPostVideo").value = video;
+    document.querySelectorAll('[data-bs-target="#deleteFriendModal"]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const userId = this.dataset.userid;
+            document.getElementById('modalDeleteFriendId').value = userId;
+        });
     });
-});
-</script>
-
-<!-- Para obtener el ID que necesita el fomulario del modal de eliminar comentarios -->
-<script>
-document.querySelectorAll(".delete-post-btn").forEach(btn => {
-
-  btn.addEventListener("click", function(e) {
-    e.preventDefault();
-  
-    // Colocamos el ID en un campo oculto dentro del modal
-    document.getElementById("modalDeletePostId").value = this.dataset.id;
-  });
-
-});
 </script>
 
 
 <!-- Para obtener el ID y texto que necesita el fomulario del modal de editar comentarios -->
 <script>
-document.querySelectorAll(".edit-comment-btn").forEach(btn => {
-    
-    btn.addEventListener("click", function(e) {
-        e.preventDefault();
-        const id = this.dataset.id;
-        const text = this.dataset.text;
+    document.querySelectorAll(".edit-comment-btn").forEach(btn => {
 
-        document.getElementById("modalCommentId").value = id;
-        document.getElementById("modalCommentText").value = text;
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            const id = this.dataset.id;
+            const text = this.dataset.text;
+
+            document.getElementById("modalCommentId").value = id;
+            document.getElementById("modalCommentText").value = text;
+        });
+
     });
-
-});
 </script>
 
 <!-- Para obtener el ID que necesita el fomulario del modal de eliminar comentarios -->
 <script>
-document.querySelectorAll(".delete-comment-btn").forEach(btn => {
+    document.querySelectorAll(".delete-comment-btn").forEach(btn => {
 
-  btn.addEventListener("click", function(e) {
-    e.preventDefault();
-  
-    // Colocamos el ID en un campo oculto dentro del modal
-    document.getElementById("modalDeleteCommentId").value = this.dataset.id;
-  });
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
 
-});
+            // Colocamos el ID en un campo oculto dentro del modal
+            document.getElementById("modalDeleteCommentId").value = this.dataset.id;
+        });
+
+    });
 </script>
 
 @section Scripts {

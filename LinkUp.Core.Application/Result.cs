@@ -23,6 +23,7 @@
 
     public class Result<T> : Result
     {
+        public bool isFailure;
         public T? Value { get; }
 
         protected Result(

@@ -11,11 +11,11 @@
         <div class="col-md-3">
             <div class="card shadow-sm border-0">
                <nav class="list-group list-group-flush">
-                    <a asp-controller="" asp-action=""
+                    <a asp-controller="Home" asp-action="Index"
                        class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
                         LinkUp (Home)
                     </a>
-                    <a asp-controller="" asp-action=""
+                    <a asp-controller="Friends" asp-action="Index"
                        class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
                         Amigos
                     </a>
@@ -27,16 +27,12 @@
                        class="list-group-item list-group-item-action text-dark fw-semibold no-link-style">
                         Battleship
                     </a>
-                    <div class="list-group-item bg-light">
-                        <div class="h6 text-muted mb-1">Following</div>
-                        <div class="h5 mb-0 fw-bold">6758</div>
-                    </div>
                 </nav>
             </div>
         </div>
 
 
-        <div class="col-md-7 gedf-main">
+        <div class="col-md-8 gedf-main">
             <div class="row">
                 @{
                     if (ViewBag.Message != null)
@@ -79,13 +75,18 @@
                             <tr>
                                 <td>@(item.Player1Id == currentUserId ? item.Player2!.UserName : item.Player1!.UserName)</td>
                                 <td>@item.StartDate.ToShortDateString()</td>
-                                <td>@((item.EndDate ?? DateTime.Now) - item.StartDate)</td>
+                                @{
+                                    var duration = (item.EndDate ?? DateTime.Now) - item.StartDate;
+                                }
+                                <td>
+                                    @($"{duration.Days}d {duration.Hours}h {duration.Minutes}m")
+                                </td>
                                 <td>
                                     <a class="btn btn-sm btn-outline-warning me-2" asp-controller="Battleship"
                                        asp-action="EnterTheGame"
                                        asp-route-gameId="@item.Id"
-                                       >
-                                       Entrar 
+                                    >
+                                        Entrar 
                                     </a>
 
                                     <a class="btn btn-sm btn-outline-danger" asp-controller="Battleship"
@@ -93,8 +94,8 @@
                                        asp-route-gameId="@item.Id"
                                        asp-route-userId="@currentUserId"
                                        asp-route-redirectToHome="true"
-                                       >
-                                       Finalizar 
+                                    >
+                                        Finalizar 
                                     </a>
 
                                 </td>
@@ -102,6 +103,32 @@
                         }
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-start mb-4">
+                    <div class="card">
+                        <div class="card-header text-center">
+                           Partidas jugadas 
+                        </div>
+                        <div class="card-body">
+                            @Model.Summary.GamesCount
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-center">
+                            Victorias
+                        </div>
+                        <div class="card-body">
+                            @Model.Summary.GamesWinCount
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-center">
+                            Derrotas
+                        </div>
+                        <div class="card-body">
+                            @Model.Summary.GamesLoseCount
+                        </div>
+                    </div>
                 </div>
 
                 <a class="btn btn-success" asp-controller="Battleship" asp-action="Create">Crear una partida</a>
@@ -125,7 +152,14 @@
                                 <td>@(item.Player1Id == currentUserId ? item.Player2!.UserName : item.Player1!.UserName)</td>
                                 <td>@item.StartDate.ToShortDateString()</td>
                                 <td>@item.EndDate?.ToShortDateString() </td>
-                                <td>@((item.EndDate ?? DateTime.Now) - item.StartDate)</td>
+                                
+                                @{
+                                    var duration = (item.EndDate ?? DateTime.Now) - item.StartDate;
+                                }
+                                <td>
+                                    @($"{duration.Days}d {duration.Hours}h {duration.Minutes}m")
+                                </td>
+                                
                                 <td>@(item.WinnerId == currentUserId  ? "Victoria" : "Derrota")</td>
                                 <td>
                                     @(item.WinnerId == currentUserId ? "Yo" : item.Player1Id == currentUserId ? item.Player2!.UserName : item.Player1!.UserName)
@@ -148,8 +182,10 @@
             </div>
         </div>
 
+        
+        
         <!-- Lateral derecho (opcional) -->
-        <div class="col-md-2">
+        <div class="col-md-1">
        </div>
     </div>
 </div>
